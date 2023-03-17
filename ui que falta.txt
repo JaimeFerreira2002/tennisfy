@@ -1,0 +1,5 @@
+- settings
+- inbox
+- chat
+- game overview
+- stats page
