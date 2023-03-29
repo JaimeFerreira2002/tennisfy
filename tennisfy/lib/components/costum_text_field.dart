@@ -22,59 +22,54 @@ class CostumTextField extends StatefulWidget {
 class _CostumTextField extends State<CostumTextField> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 6),
-        Container(
-          height: 60,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.tertiary,
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            boxShadow: [
-              BoxShadow(
-                offset: const Offset(0, 0),
-                blurRadius: 8.0,
-                spreadRadius: 0.5,
-                color: const Color.fromARGB(255, 59, 59, 59).withOpacity(0.2),
-              ),
-            ],
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.tertiary,
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, 0),
+            blurRadius: 8.0,
+            spreadRadius: 0.5,
+            color: const Color.fromARGB(255, 59, 59, 59).withOpacity(0.2),
           ),
-          child: TextField(
-            controller: widget.textController,
-            obscureText: widget.showText,
-            style: TextStyle(
+        ],
+      ),
+      child: TextField(
+        controller: widget.textController,
+        obscureText: widget.showText,
+        style: TextStyle(
+          fontFamily: 'Poppins',
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(20),
+          hintText: widget.hintText,
+          hintStyle: const TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(20),
-              hintText: widget.hintText,
-              hintStyle: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Color.fromARGB(255, 178, 178, 178)),
-              suffixIcon: widget.isPassword
-                  ? IconButton(
-                      onPressed: () {
-                        setState(() {
-                          widget.showText = !widget.showText;
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.remove_red_eye_rounded,
-                        size: 19,
-                      ),
-                      splashRadius: 1.0,
-                    )
-                  : null,
-              border: InputBorder.none,
-            ),
-          ),
+              color: Color.fromARGB(255, 178, 178, 178)),
+          suffixIcon: widget.isPassword
+              ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      widget.showText = !widget.showText;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.remove_red_eye_rounded,
+                    size: 19,
+                  ),
+                  splashRadius: 1.0,
+                )
+              : null,
+          border: InputBorder.none,
         ),
-      ],
+      ),
     );
   }
 }

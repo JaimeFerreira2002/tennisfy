@@ -1,0 +1,10 @@
+Sempre que for preciso usar informacao do user vinda da firebase, tem que ser no future builder, porque a informacao nao 
+e instantanea, porque tem que establecer ligacao. Logo o widget so pode fazerd build quando chegar o futuro. 
+Nos FutureBuilder podemos dar um valor inical que é disposto até que "chegue" o future
+
+Scaffold é usado debaixo da materrial app, é como se fosse o suporte matrial da aplicacao, que da acesso a avaios metodos
+, será que ha outros widgets?
+
+Sempre que temos um scaffold com um textfield, podemos metelo sob um GestureDectecture para baixar o teclado se tocarmos fora
+
+ListView.builder é bom para usar em listas muito grandes
