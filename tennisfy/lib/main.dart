@@ -1,10 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:tennisfy/pages/login_page.dart';
+import 'package:tennisfy/helpers/widget_tree.dart';
 
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
-
+ 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -46,7 +49,7 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.w900),
         ),
       ),
-      home: LoginPage(),
+      home: const WidgetTree(),
     );
   }
 }

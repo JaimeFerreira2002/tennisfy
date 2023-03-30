@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "356547079556",
+    "project_id": "tennisfy-1081b",
+    "storage_bucket": "tennisfy-1081b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:356547079556:android:48f9e72f891517a10ac1d1",
+        "android_client_info": {
+          "package_name": "com.example.tennisfy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "356547079556-l18fm9jbjtqrbqu0s9otlut1gjc4cabj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJA0P_muBkkPOOgRYakb74L35jIFvdZRs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "356547079556-l18fm9jbjtqrbqu0s9otlut1gjc4cabj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tennisfy/helpers/media_query_helpers.dart';
 
 ///
 ///TextFields used in login page and register page
@@ -23,7 +24,7 @@ class _CostumTextField extends State<CostumTextField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60,
+      height: displayHeight(context) * 0.4,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.tertiary,
         borderRadius: const BorderRadius.all(Radius.circular(10)),
