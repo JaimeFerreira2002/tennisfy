@@ -1,3 +1,0 @@
--> Mudar o texto do costumTextField para utilizar o TextTheme()
-
--> Arranjar a animacao do campo para confirmar password, quando mudamos de login para register
