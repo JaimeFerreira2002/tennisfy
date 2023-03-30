@@ -24,7 +24,7 @@ class _CostumTextField extends State<CostumTextField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: displayHeight(context) * 0.4,
+      height: displayHeight(context) * 0.074,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.tertiary,
         borderRadius: const BorderRadius.all(Radius.circular(10)),

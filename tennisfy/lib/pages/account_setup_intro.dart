@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -230,25 +231,44 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
                         border: InputBorder.none,
                       ),
                       onTap: () async {
-                        DateTime? newDate = await showDatePicker(
+                        showCupertinoModalPopup(
                             context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1950),
-                            lastDate: DateTime.now());
+                            builder: (BuildContext context) => Container(
+                                  height: 250,
+                                  child: CupertinoDatePicker(
+                                      mode: CupertinoDatePickerMode.date,
+                                      maximumDate: DateTime(
+                                          DateTime.now().year - 18,
+                                          DateTime.now().month,
+                                          DateTime.now().day),
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                      initialDateTime: DateTime(
+                                          DateTime.now().year - 18,
+                                          DateTime.now().month,
+                                          DateTime.now().day),
+                                      onDateTimeChanged: (DateTime newDate) {
+                                        setState(() {
+                                          datePicked = newDate;
+                                          if (datePicked == DateTime.now()) {
+                                            return;
+                                          } else {
+                                            setState(() {
+                                              _hasPickedDate = true;
 
-                        if (newDate == null) {
-                          return;
-                        } else {
-                          setState(() {
-                            _hasPickedDate = true;
-                            datePicked = newDate;
-                            datePickerHintText = newDate.day.toString() +
-                                " / " +
-                                newDate.month.toString() +
-                                " / " +
-                                newDate.year.toString();
-                          });
-                        }
+                                              datePickerHintText = datePicked
+                                                      .day
+                                                      .toString() +
+                                                  " / " +
+                                                  datePicked.month.toString() +
+                                                  " / " +
+                                                  datePicked.year.toString();
+                                            });
+                                          }
+                                        });
+                                      }),
+                                ));
                       },
                     ),
                   ),
