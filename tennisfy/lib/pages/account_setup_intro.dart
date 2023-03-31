@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tennisfy/helpers/auth.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/pages/tennis_setup_intro.dart';
@@ -33,76 +34,83 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
           //this container is needed because of SingleChildScrollView, to fill the whole screen
           height: displayHeight(context),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+            //padding for the whole page, then we use indidual pasddings for space between
+            padding: const EdgeInsets.fromLTRB(14, 20, 14, 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    children: [
-                      //why several aligns? and not just on in column
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Welcome",
-                          style: Theme.of(context).textTheme.headline1,
-                        ),
-                      ),
-                      const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                              "We are thrilled to have you in our community!")),
-                      const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                              "Now let's get started by setting up your profile"))
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Column(
                   children: [
-                    Container(
-                      height: displayHeight(context) * 0.22,
-                      width: displayHeight(context) * 0.22,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).colorScheme.primary,
-                        image: DecorationImage(
-                            image: FileImage(profileImage), // placeholder
-                            fit: BoxFit.cover),
+                    //why several aligns? and not just on in column
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Welcome",
+                        style: Theme.of(context).textTheme.headline1,
                       ),
                     ),
-                    Container(
-                      height: displayHeight(context) * 0.05,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.tertiary,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0, 0),
-                            blurRadius: 8.0,
-                            spreadRadius: 0.5,
-                            color: const Color.fromARGB(255, 59, 59, 59)
-                                .withOpacity(0.2),
-                          ),
-                        ],
-                      ),
-                      child: TextButton(
-                          onPressed: () {
-                            pickImage();
-                          },
-                          child: const Text(
-                            "Upload Photo",
-                            style: TextStyle(fontSize: 12),
-                          )),
-                    )
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "We are thrilled to have you in our community!",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        )),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Now let's get started by setting up your profile",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ))
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        height: displayHeight(context) * 0.22,
+                        width: displayHeight(context) * 0.22,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context).colorScheme.primary,
+                          image: DecorationImage(
+                              image: FileImage(profileImage), // placeholder
+                              fit: BoxFit.cover),
+                        ),
+                      ),
+                      SizedBox(width: displayWidth(context) * 0.02),
+                      Container(
+                        height: displayHeight(context) * 0.05,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.tertiary,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          boxShadow: [
+                            BoxShadow(
+                              offset: const Offset(0, 0),
+                              blurRadius: 8.0,
+                              spreadRadius: 0.5,
+                              color: const Color.fromARGB(255, 59, 59, 59)
+                                  .withOpacity(0.2),
+                            ),
+                          ],
+                        ),
+                        child: TextButton(
+                            onPressed: () {
+                              pickImage();
+                            },
+                            child: const Text(
+                              "Upload Photo",
+                              style: TextStyle(fontSize: 12),
+                            )),
+                      )
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -113,7 +121,7 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
                 ),
                 //change CostumTextField to take in height and width, to be able to be more costumizable
                 Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -195,7 +203,7 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(14.0),
+                  padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
                   child: Container(
                     height: displayHeight(context) * 0.074,
                     decoration: BoxDecoration(
@@ -274,7 +282,7 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(14.0),
+                  padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
                   child: Container(
                     height: displayHeight(context) * 0.1,
                     decoration: BoxDecoration(
@@ -315,27 +323,40 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      width: displayWidth(context) * 0.3,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: TextButton(
+                  padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
                           onPressed: () {
-                            goToPage(context, TennisSetupIntro());
+                            signOut();
                           },
-                          child: Text(
-                            "Next",
+                          child: const Text(
+                            "Sign out",
                             style: TextStyle(
-                                color: Theme.of(context).colorScheme.tertiary,
-                                fontSize: 16),
+                              fontSize: 14,
+                              color: Color.fromARGB(255, 212, 97, 88),
+                            ),
                           )),
-                    ),
+                      Container(
+                        width: displayWidth(context) * 0.3,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                        ),
+                        child: TextButton(
+                            onPressed: () {
+                              goToPage(context, TennisSetupIntro());
+                            },
+                            child: Text(
+                              "Next",
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  fontSize: 16),
+                            )),
+                      ),
+                    ],
                   ),
                 )
               ],
@@ -364,7 +385,7 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
               color: sexSelected == sex
                   ? Theme.of(context).colorScheme.secondary
                   : Theme.of(context).colorScheme.tertiary,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(10),
               border: sexSelected == sex
                   ? null
                   : Border.all(
