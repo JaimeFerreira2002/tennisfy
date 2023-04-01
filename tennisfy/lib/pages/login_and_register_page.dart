@@ -42,6 +42,7 @@ class _LoginAndRegisterPageState extends State<LoginAndRegisterPage> {
                     Container(
                       child: Center(
                         child: Container(
+                          //is this container necessary?
                           child: Image.asset(
                             "assets/images/logo.png",
                           ),

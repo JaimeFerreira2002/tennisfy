@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tennisfy/helpers/auth.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
-import 'package:tennisfy/pages/tennis_setup_intro.dart';
+import 'package:tennisfy/pages/tennis_setup.dart';
 
 class AccountSetupIntro extends StatefulWidget {
   const AccountSetupIntro({Key? key}) : super(key: key);
@@ -339,6 +339,7 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
                             ),
                           )),
                       Container(
+                        //when the button doesnt have a shadow, the container is unecessary, just use TextButton, but for some reason, color doens t work on buttonStyle
                         width: displayWidth(context) * 0.3,
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.secondary,
@@ -347,7 +348,7 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
                         ),
                         child: TextButton(
                             onPressed: () {
-                              goToPage(context, TennisSetupIntro());
+                              goToPage(context, TennisSetup());
                             },
                             child: Text(
                               "Next",
@@ -379,8 +380,8 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
           curve: Curves.decelerate,
           height: 45,
           width: sexSelected == sex
-              ? MediaQuery.of(context).size.width * 0.5
-              : MediaQuery.of(context).size.width * 0.4,
+              ? MediaQuery.of(context).size.width * 0.6
+              : MediaQuery.of(context).size.width * 0.3,
           decoration: BoxDecoration(
               color: sexSelected == sex
                   ? Theme.of(context).colorScheme.secondary
@@ -410,20 +411,5 @@ class _AccountSetupIntroState extends State<AccountSetupIntro> {
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
     }
-  }
-
-  Widget _showPopupDialog(BuildContext context) {
-    return AlertDialog(
-      insetPadding: const EdgeInsets.all(12),
-      contentPadding: const EdgeInsets.all(14),
-      content: Text(
-        "Give a short description of yourself, think of what you would like to know about a person your going to play against.",
-        style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-            fontSize: 14),
-      ),
-    );
   }
 }
