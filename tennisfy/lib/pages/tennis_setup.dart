@@ -9,13 +9,16 @@ class TennisSetup extends StatefulWidget {
 }
 
 class _TennisSetupState extends State<TennisSetup> {
-  int _questionSelected = 1; //used to keep track of withc quastions the user is
-  List<int> _optionsSelected = [
-    0,
-    0,
-    0
-  ]; //be aware thet questionSelectd is from 1 to 3 while this is 0 - 3
+  int _questionSelected = 0; //used to keep track of withc quastions the user is
+  //be aware thet questionSelectd is from 0 to 2
+
   //list of each of the three options the user  choose
+  final List<int> _optionsSelected = [0, 0, 0];
+  final List<List<String>> _answersList = [
+    ["Begginer", "Intermidiate", "Advanced", "Professional"],
+    ["0 - 6 months", "6 months - 1 year", "1 - 3 years", "3+ years"],
+    ["0 - 5", "5 - 10", "10 - 20", "20+"]
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +34,19 @@ class _TennisSetupState extends State<TennisSetup> {
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      "About Tennis",
-                      style: Theme.of(context).textTheme.headline1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "About Tennis",
+                          style: Theme.of(context).textTheme.headline1,
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.arrow_back))
+                      ],
                     ),
                   ),
                   SizedBox(height: displayHeight(context) * 0.01),
@@ -48,33 +61,25 @@ class _TennisSetupState extends State<TennisSetup> {
           //this values have to add up to 0,85, to put the green container in the bottom of the page
           Container(
             height: displayHeight(context) * 0.35,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Column(
-                children: [
-                  const Text(
-                      "Of the following options, how experienced would you consider yourself"),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                        children: _questionSelected == 1
-                            ? _questionAnswersList(0, [
-                                "Begginer",
-                                "Intermidiate",
-                                "Advanced",
-                                "Professional"
-                              ])
-                            : _questionSelected == 2
-                                ? _questionAnswersList(1, [
-                                    "0 - 6 months",
-                                    "6 months - 1 year",
-                                    "1 - 3 years",
-                                    "3+ years"
-                                  ])
-                                : _questionAnswersList(
-                                    2, ["0 - 5", "5 - 10", "10 - 20", "20+"])),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    child: Stack(
+                      children: [
+                        _question(0, _answersList[0],
+                            "How experienced would you consider yourself ?"),
+                        _question(1, _answersList[1],
+                            "For how long have you been playing ?"),
+                        _question(2, _answersList[2],
+                            "How often do you play or practice ?"),
+                      ],
+                    ),
                   ),
-                  Row(
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Row(
@@ -88,10 +93,25 @@ class _TennisSetupState extends State<TennisSetup> {
                                     color:
                                         Theme.of(context).colorScheme.secondary,
                                     width: 1),
+                                color: _questionSelected == 0
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Colors.transparent),
+                          ),
+                          SizedBox(width: displayWidth(context) * 0.02),
+                          Container(
+                            width: displayWidth(context) * 0.1,
+                            height: displayHeight(context) * 0.008,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    width: 1),
                                 color: _questionSelected == 1
                                     ? Theme.of(context).colorScheme.secondary
                                     : Colors.transparent),
                           ),
+                          SizedBox(width: displayWidth(context) * 0.02),
                           Container(
                             width: displayWidth(context) * 0.1,
                             height: displayHeight(context) * 0.008,
@@ -105,23 +125,10 @@ class _TennisSetupState extends State<TennisSetup> {
                                     ? Theme.of(context).colorScheme.secondary
                                     : Colors.transparent),
                           ),
-                          Container(
-                            width: displayWidth(context) * 0.1,
-                            height: displayHeight(context) * 0.008,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    width: 1),
-                                color: _questionSelected == 3
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Colors.transparent),
-                          ),
                         ],
                       ),
                       AnimatedOpacity(
-                        opacity: _questionSelected != 1 ? 1 : 0,
+                        opacity: _questionSelected != 0 ? 1 : 0,
                         duration: const Duration(milliseconds: 200),
                         child: Container(
                           //when the button doesnt have a shadow, the container is unecessary, just use TextButton, but for some reason, color doens t work on buttonStyle
@@ -139,7 +146,7 @@ class _TennisSetupState extends State<TennisSetup> {
                                 });
                               },
                               icon: const Icon(
-                                Icons.arrow_back_ios,
+                                Icons.arrow_back,
                                 color: Colors.white,
                               )),
                         ),
@@ -155,7 +162,7 @@ class _TennisSetupState extends State<TennisSetup> {
                         ),
                         child: TextButton(
                             onPressed: () {
-                              if (_questionSelected == 3) {
+                              if (_questionSelected == 2) {
                               } else {
                                 setState(() {
                                   _questionSelected++;
@@ -163,16 +170,16 @@ class _TennisSetupState extends State<TennisSetup> {
                               }
                             },
                             child: Text(
-                              _questionSelected == 3 ? "Finish" : "Next",
+                              _questionSelected == 2 ? "Finish" : "Next",
                               style: TextStyle(
                                   color: Theme.of(context).colorScheme.tertiary,
                                   fontSize: 16),
                             )),
                       ),
                     ],
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
           ),
           Container(
@@ -185,11 +192,35 @@ class _TennisSetupState extends State<TennisSetup> {
                   color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
-              Align(
-                heightFactor: 1.1,
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeInOutBack,
+                left: displayWidth(context) * 0.2 -
+                    _questionSelected * displayWidth(context),
                 child: Image.asset(
                   "assets/images/tennis_serve_cartoon.png",
                   scale: 1.6,
+                ),
+              ),
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeInOutBack,
+                top: displayHeight(context) * 0.09,
+                left: displayWidth(context) * 0.16 -
+                    (_questionSelected - 1) * displayWidth(context),
+                child: Image.asset(
+                  "assets/images/tennis_net_cartoon.png",
+                  scale: 6,
+                ),
+              ),
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeInOutBack,
+                left: displayWidth(context) * 0.2 -
+                    (_questionSelected - 2) * displayWidth(context),
+                child: Image.asset(
+                  "assets/images/tennis_reciever_cartoon.png",
+                  scale: 1.1,
                 ),
               ),
             ]),
@@ -237,12 +268,35 @@ class _TennisSetupState extends State<TennisSetup> {
     );
   }
 
-  List<Padding> _questionAnswersList(int questionNumber, List<String> labels) {
-    return [
-      _QuestionRowButton(questionNumber, 1, labels[0]),
-      _QuestionRowButton(questionNumber, 2, labels[1]),
-      _QuestionRowButton(questionNumber, 3, labels[2]),
-      _QuestionRowButton(questionNumber, 4, labels[3])
-    ];
+  AnimatedPositioned _question(
+      int questionNumber, List<String> answers, String question) {
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOutCirc,
+      left: _questionSelected == questionNumber
+          ? displayWidth(context) * 0.06
+          : _questionSelected - questionNumber > 0
+              ? -displayWidth(context) * 0.8 * (questionNumber + 1)
+              : displayWidth(context) * 0.8 * (questionNumber + 1),
+      child: Container(
+        width: displayWidth(context) * 0.8,
+        child: Column(
+          children: [
+            Align(alignment: Alignment.centerLeft, child: Text(question)),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  _QuestionRowButton(questionNumber, 1, answers[0]),
+                  _QuestionRowButton(questionNumber, 2, answers[1]),
+                  _QuestionRowButton(questionNumber, 3, answers[2]),
+                  _QuestionRowButton(questionNumber, 4, answers[3])
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

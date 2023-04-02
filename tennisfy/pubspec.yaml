@@ -72,6 +72,9 @@ flutter:
     - assets/images/logo.png
     - assets/images/profileImagePlaceHolder.png
     - assets/images/tennis_serve_cartoon.png
+    - assets/images/tennis_reciever_cartoon.png
+    - assets/images/tennis_net_cartoon.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

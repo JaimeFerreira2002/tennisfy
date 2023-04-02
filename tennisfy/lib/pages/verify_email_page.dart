@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../helpers/auth.dart';
-import 'account_setup_intro.dart';
+import 'account_setup.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) => _emailIsVerified
-      ? const AccountSetupIntro()
+      ? const AccountSetup()
       : Scaffold(
           body: Center(
             child: Column(
