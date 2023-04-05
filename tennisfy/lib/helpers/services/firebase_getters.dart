@@ -59,14 +59,35 @@ Future<String> getBannerImageURL(String userUID) async {
 }
 
 ///
-///Retrieves current user user name
+///Retrieves current user first name
 ///
 
-Future<String> getUserName(String userUID) async {
+Future<String> getUserFirstName(String userUID) async {
   final DocumentSnapshot userDoc =
       await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
 
-  return userDoc.get('Name');
+  return userDoc.get('FirstName');
+}
+
+///
+///Retrieves  user last name
+///
+
+Future<String> getUserLastName(String userUID) async {
+  final DocumentSnapshot userDoc =
+      await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
+
+  return userDoc.get('LastName');
+}
+
+///
+///Retrieves  user full name
+///
+Future<String> getUserFullName(String userUID) async {
+  final DocumentSnapshot userDoc =
+      await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
+
+  return userDoc.get('FirstName') + ' ' + userDoc.get('LastName');
 }
 
 ///

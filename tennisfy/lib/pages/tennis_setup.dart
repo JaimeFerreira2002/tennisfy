@@ -1,8 +1,21 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
+import 'package:tennisfy/pages/elo_show_page.dart';
+
+import '../helpers/auth.dart';
+import '../models/user_model.dart';
 
 class TennisSetup extends StatefulWidget {
-  const TennisSetup({Key? key}) : super(key: key);
+  UserData currentUserData;
+  File profileImage;
+  TennisSetup(
+      {Key? key, required this.currentUserData, required this.profileImage})
+      : super(key: key);
 
   @override
   State<TennisSetup> createState() => _TennisSetupState();
@@ -12,8 +25,10 @@ class _TennisSetupState extends State<TennisSetup> {
   int _questionSelected = 0; //used to keep track of withc quastions the user is
   //be aware thet questionSelectd is from 0 to 2
 
-  //list of each of the three options the user  choose
-  final List<int> _optionsSelected = [0, 0, 0];
+  //list of each of the three answers the user  choose, the values are from 1 to 4
+  final List<int> _answersSelected = [0, 0, 0];
+
+  //list with all the answers labels
   final List<List<String>> _answersList = [
     ["Begginer", "Intermidiate", "Advanced", "Professional"],
     ["0 - 6 months", "6 months - 1 year", "1 - 3 years", "3+ years"],
@@ -67,11 +82,11 @@ class _TennisSetupState extends State<TennisSetup> {
                   child: Container(
                     child: Stack(
                       children: [
-                        _question(0, _answersList[0],
+                        _Question(0, _answersList[0],
                             "How experienced would you consider yourself ?"),
-                        _question(1, _answersList[1],
+                        _Question(1, _answersList[1],
                             "For how long have you been playing ?"),
-                        _question(2, _answersList[2],
+                        _Question(2, _answersList[2],
                             "How often do you play or practice ?"),
                       ],
                     ),
@@ -163,6 +178,14 @@ class _TennisSetupState extends State<TennisSetup> {
                         child: TextButton(
                             onPressed: () {
                               if (_questionSelected == 2) {
+                                _updateUserData();
+                                goToPage(
+                                    context,
+                                    EloShowPage(
+                                        ELO: _calculateNewELO(
+                                            _answersSelected[0],
+                                            _answersSelected[1],
+                                            _answersSelected[2])));
                               } else {
                                 setState(() {
                                   _questionSelected++;
@@ -240,7 +263,7 @@ class _TennisSetupState extends State<TennisSetup> {
           GestureDetector(
             onTap: () {
               setState(() {
-                _optionsSelected[questionNumber] = answerNumber;
+                _answersSelected[questionNumber] = answerNumber;
               });
             },
             child: Container(
@@ -248,7 +271,7 @@ class _TennisSetupState extends State<TennisSetup> {
               width: 16,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
-                  color: _optionsSelected[questionNumber] == answerNumber
+                  color: _answersSelected[questionNumber] == answerNumber
                       ? Theme.of(context).colorScheme.secondary
                       : Colors.white,
                   border: Border.all(
@@ -268,7 +291,7 @@ class _TennisSetupState extends State<TennisSetup> {
     );
   }
 
-  AnimatedPositioned _question(
+  AnimatedPositioned _Question(
       int questionNumber, List<String> answers, String question) {
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 500),
@@ -298,5 +321,75 @@ class _TennisSetupState extends State<TennisSetup> {
         ),
       ),
     );
+  }
+
+  void _updateUserData() {
+//create updated userData
+    UserData newUser = UserData(
+        UID: Auth().currentUser!.uid,
+        email: Auth().currentUser!.email!,
+        firstName: widget.currentUserData.firstName,
+        lastName: widget.currentUserData.lastName,
+        dateOfBirth: widget.currentUserData.dateOfBirth,
+        sex: widget.currentUserData.sex,
+        bio: widget.currentUserData.bio,
+        ELO: _calculateNewELO(
+            _answersSelected[0], _answersSelected[1], _answersSelected[2]),
+        hasSetupAccount: true,
+        gamesPlayed: [],
+        friendsList: [],
+        nextGamesList: [],
+        reputation: 0.0,
+        dateJoined: DateTime.now(),
+        comments: [],
+        friendRequests: []);
+
+    //update firebase instace of this user
+    final json = newUser.toJson();
+    FirebaseFirestore.instance
+        .collection('Users')
+        .doc(Auth().currentUser!.uid.toString())
+        .update(json);
+
+    //last we update the user profile image in Firebase Storage
+    _uploadImage();
+  }
+
+  void _uploadImage() async {
+    final _firabaseStorage = FirebaseStorage.instance;
+    await _firabaseStorage
+        .ref()
+        .child("ProfilePictures/" + Auth().currentUser!.uid.toString() + ".jpg")
+        .putFile(widget.profileImage);
+  }
+
+//all the parameters are values from 0 to 3 - representing the users answers
+  int _calculateNewELO(
+      int experienceLevel, int playingDuration, int playingFrequency) {
+    // Map the parameter values from the range of 1-4 to 0-3 for easier calculation
+    experienceLevel -= 1;
+    playingDuration -= 1;
+    playingFrequency -= 1;
+
+    // Calculate the ELO value based on the user's experience level, playing duration, and playing frequency
+    double baseElo = (experienceLevel * 100) /
+        3; // Beginner=133.33, Intermediate=266.67, Advanced=400
+    double durationBonus =
+        (playingDuration * 20) / 3; // 1 hour = 6.67 ELO points
+    double frequencyBonus =
+        (playingFrequency * 25) / 3; // 1 time per month = 8.33 ELO points
+    double totalElo = baseElo + durationBonus + frequencyBonus;
+
+    // Map the ELO value from the range of 0-100 to 0-99, and then round it to the nearest integer
+    int elo = (totalElo / 100 * 99).round();
+
+    // Ensure that the ELO value is within the range of 0-99
+    if (elo < 0) {
+      elo = 0;
+    } else if (elo > 99) {
+      elo = 99;
+    }
+
+    return elo;
   }
 }

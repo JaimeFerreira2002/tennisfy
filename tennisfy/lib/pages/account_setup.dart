@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tennisfy/helpers/auth.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
+import 'package:tennisfy/models/user_model.dart';
 import 'package:tennisfy/pages/tennis_setup.dart';
 
 class AccountSetup extends StatefulWidget {
@@ -43,7 +44,7 @@ class _AccountSetupState extends State<AccountSetup> {
             height: displayHeight(context),
             child: Padding(
               //padding for the whole page, then we use indidual pasddings for space between, this one is necessary to ajust top and bottom page
-              padding: const EdgeInsets.fromLTRB(14, 20, 14, 20),
+              padding: const EdgeInsets.fromLTRB(14, 40, 14, 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -372,7 +373,31 @@ class _AccountSetupState extends State<AccountSetup> {
                                   setState(() {
                                     _errorMessage = "";
                                   });
-                                  goToPage(context, TennisSetup());
+                                  //here we create a userObject with the data we have and send as an argument to the TennisSetupPage, to update there
+                                  goToPage(
+                                      context,
+                                      TennisSetup(
+                                        profileImage: profileImage,
+                                        currentUserData: UserData(
+                                            UID: Auth().currentUser!.uid,
+                                            email: Auth().currentUser!.email!,
+                                            firstName:
+                                                _firstNameController.text,
+                                            lastName: _lastNameController.text,
+                                            dateOfBirth: datePicked,
+                                            sex:
+                                                sexSelected ? "Male" : "Female",
+                                            bio: _bioController.text,
+                                            ELO: 0,
+                                            hasSetupAccount: false,
+                                            gamesPlayed: [],
+                                            friendsList: [],
+                                            nextGamesList: [],
+                                            reputation: 0,
+                                            dateJoined: DateTime.now(),
+                                            comments: [],
+                                            friendRequests: []),
+                                      ));
                                 }
                               },
                               child: Text(
