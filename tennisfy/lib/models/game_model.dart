@@ -35,9 +35,7 @@ class Game {
         'LocationSet': locationSet,
       };
 
-  ///
-  ///We are getting one at a time, is this stil necessary?
-  ///
+ 
   static fromJson(Map<String, dynamic> json) {
     return Game(
       isSet: json['IsSet'],

@@ -141,8 +141,13 @@ class _EloShowPageState extends State<EloShowPage> {
             height: displayHeight(context) * 0.3,
             child: Column(
               children: [
-                Align(alignment: Alignment.topCenter, child: Text(text)),
-                SizedBox(height: displayHeight(context) * 0.03),
+                Align(
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      text,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    )),
+                SizedBox(height: displayHeight(context) * 0.02),
                 Container(
                   width: displayWidth(context) * 0.9,
                   child: TextButton(

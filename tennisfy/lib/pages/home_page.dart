@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
@@ -17,8 +16,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _bottomBarIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,15 +24,16 @@ class _HomePageState extends State<HomePage> {
           stream: getUserDataStream(Auth().currentUser!.uid),
           builder: (context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
-
             List<ELOHistory> ELOHistoryList = _buildELOHistoryList(
                 Auth().currentUser!.uid,
-                (snapshot.data.get('ELOHistory') as List<dynamic>).cast<int>());
+                (jsonDecode(snapshot.data.get('ELOHistory')) as List<dynamic>)
+                    .cast<int>());
             List<Game> _gamesPlayed =
-                (jsonDecode(snapshot.data.get('GamesPlayed')) as List)
+                (jsonDecode(snapshot.data.get('GamesPlayed')) as List<dynamic>)
                     .cast<Game>();
+            debugPrint("List" + _gamesPlayed.toString());
             return Padding(
               padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
               child: Column(
@@ -44,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Hi " + snapshot.data.get('FirstName') + " ! ",
+                      "Hi " + snapshot.data.get('FirstName') + "! ",
                       style: Theme.of(context).textTheme.headline1,
                     ),
                   ),
@@ -299,7 +297,7 @@ class _HomePageState extends State<HomePage> {
 
   List<ELOHistory> _buildELOHistoryList(String uid, List<int> userELOHistory) {
     List<ELOHistory> output = [];
-    int counter = 1;
+    int counter = 0;
     userELOHistory.forEach((element) {
       output.add(ELOHistory(element, counter));
       counter++;
@@ -308,6 +306,10 @@ class _HomePageState extends State<HomePage> {
     return output;
   }
 }
+
+///
+///Aux class to build stats graph
+///
 
 class ELOHistory {
   int ELO;
