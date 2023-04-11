@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/pages/elo_show_page.dart';
-
 import '../helpers/auth.dart';
 import '../models/user_model.dart';
 
@@ -23,21 +21,29 @@ class TennisSetup extends StatefulWidget {
 
 class _TennisSetupState extends State<TennisSetup> {
   int _questionSelected = 0; //used to keep track of withc quastions the user is
-  //be aware thet questionSelectd is from 0 to 2
+  //be aware thet questionSelectd is from 0 to 3
 
   //list of each of the three answers the user  choose, the values are from 1 to 4
-  final List<int> _answersSelected = [0, 0, 0];
+  final List<int> _answersSelected = [0, 0, 0, 0];
 
   //list with all the answers labels
   final List<List<String>> _answersList = [
-    ["Begginer", "Intermidiate", "Advanced", "Professional"],
     ["0 - 6 months", "6 months - 1 year", "1 - 3 years", "3+ years"],
-    ["0 - 5", "5 - 10", "10 - 20", "20+"]
+    ["Recreational", "Amateur", "Semi - Professional", "Professional"],
+    ["0 - 5", "5 - 10", "10 - 20", "20+"],
+    ["No", "0 - 6 Months", "6 months - 1 year", "1+ years"]
   ];
+
+  String _errorMessage = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: Container(
+          height: 100,
+        ),
+      ),
       body: Column(
         children: [
           Container(
@@ -83,11 +89,13 @@ class _TennisSetupState extends State<TennisSetup> {
                     child: Stack(
                       children: [
                         _Question(0, _answersList[0],
-                            "How experienced would you consider yourself ?"),
-                        _Question(1, _answersList[1],
                             "For how long have you been playing ?"),
+                        _Question(1, _answersList[1],
+                            "What is your current level of competition ?"),
                         _Question(2, _answersList[2],
-                            "How often do you play or practice ?"),
+                            "How often do you play or practice monthly ?"),
+                        _Question(3, _answersList[3],
+                            "Have you haver taken lesson from a coach? If so, for how long ?"),
                       ],
                     ),
                   ),
@@ -97,50 +105,29 @@ class _TennisSetupState extends State<TennisSetup> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: displayWidth(context) * 0.1,
-                            height: displayHeight(context) * 0.008,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    width: 1),
-                                color: _questionSelected == 0
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Colors.transparent),
-                          ),
-                          SizedBox(width: displayWidth(context) * 0.02),
-                          Container(
-                            width: displayWidth(context) * 0.1,
-                            height: displayHeight(context) * 0.008,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    width: 1),
-                                color: _questionSelected == 1
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Colors.transparent),
-                          ),
-                          SizedBox(width: displayWidth(context) * 0.02),
-                          Container(
-                            width: displayWidth(context) * 0.1,
-                            height: displayHeight(context) * 0.008,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    width: 1),
-                                color: _questionSelected == 2
-                                    ? Theme.of(context).colorScheme.secondary
-                                    : Colors.transparent),
-                          ),
-                        ],
+                      Container(
+                        width: displayWidth(context) * 0.4,
+                        height: displayHeight(context) * 0.01,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: Theme.of(context).colorScheme.secondary,
+                                width: 1),
+                            color: Theme.of(context).colorScheme.tertiary),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeInOutSine,
+                              width: displayWidth(context) *
+                                  0.1 *
+                                  (_questionSelected + 1),
+                              height: displayHeight(context) * 0.01,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color:
+                                      Theme.of(context).colorScheme.secondary)),
+                        ),
                       ),
                       AnimatedOpacity(
                         opacity: _questionSelected != 0 ? 1 : 0,
@@ -157,7 +144,9 @@ class _TennisSetupState extends State<TennisSetup> {
                           child: IconButton(
                               onPressed: () {
                                 setState(() {
-                                  _questionSelected--;
+                                  _questionSelected == 0
+                                      ? null
+                                      : _questionSelected--;
                                 });
                               },
                               icon: const Icon(
@@ -177,15 +166,32 @@ class _TennisSetupState extends State<TennisSetup> {
                         ),
                         child: TextButton(
                             onPressed: () {
-                              if (_questionSelected == 2) {
-                                _updateUserData();
-                                goToPage(
+                              if (_questionSelected == 3) {
+                                if (_answersSelected[0] == 0 ||
+                                    _answersSelected[1] == 0 ||
+                                    _answersSelected[2] == 0 ||
+                                    _answersSelected[3] == 0) {
+                                  setState(() {
+                                    _errorMessage =
+                                        "Please answer all questions";
+                                  });
+                                } else {
+                                  setState(() {
+                                    _errorMessage = "";
+                                  });
+                                  _updateUserData();
+                                  Navigator.pushAndRemoveUntil(
                                     context,
-                                    EloShowPage(
-                                        ELO: _calculateNewELO(
-                                            _answersSelected[0],
-                                            _answersSelected[1],
-                                            _answersSelected[2])));
+                                    MaterialPageRoute(
+                                        builder: (context) => EloShowPage(
+                                            ELO: _calculateNewELO(
+                                                _answersSelected[0],
+                                                _answersSelected[1],
+                                                _answersSelected[2],
+                                                _answersSelected[3]))),
+                                    (Route<dynamic> route) => false,
+                                  );
+                                }
                               } else {
                                 setState(() {
                                   _questionSelected++;
@@ -193,7 +199,7 @@ class _TennisSetupState extends State<TennisSetup> {
                               }
                             },
                             child: Text(
-                              _questionSelected == 2 ? "Finish" : "Next",
+                              _questionSelected == 3 ? "Finish" : "Next",
                               style: TextStyle(
                                   color: Theme.of(context).colorScheme.tertiary,
                                   fontSize: 16),
@@ -205,8 +211,13 @@ class _TennisSetupState extends State<TennisSetup> {
               ],
             ),
           ),
+          Text(
+            _errorMessage,
+            style: const TextStyle(
+                fontSize: 12, color: Color.fromARGB(255, 212, 97, 88)),
+          ),
           Container(
-            height: displayHeight(context) * 0.3,
+            height: displayHeight(context) * 0.2825,
             child: Stack(children: [
               Align(
                 alignment: Alignment.bottomCenter,
@@ -217,7 +228,7 @@ class _TennisSetupState extends State<TennisSetup> {
               ),
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 800),
-                curve: Curves.easeInOutBack,
+                curve: Curves.easeInOutCirc,
                 left: displayWidth(context) * 0.2 -
                     _questionSelected * displayWidth(context),
                 child: Image.asset(
@@ -227,7 +238,7 @@ class _TennisSetupState extends State<TennisSetup> {
               ),
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 800),
-                curve: Curves.easeInOutBack,
+                curve: Curves.easeInOutCirc,
                 top: displayHeight(context) * 0.09,
                 left: displayWidth(context) * 0.16 -
                     (_questionSelected - 1) * displayWidth(context),
@@ -238,7 +249,7 @@ class _TennisSetupState extends State<TennisSetup> {
               ),
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 800),
-                curve: Curves.easeInOutBack,
+                curve: Curves.easeInOutCirc,
                 left: displayWidth(context) * 0.2 -
                     (_questionSelected - 2) * displayWidth(context),
                 child: Image.asset(
@@ -258,15 +269,15 @@ class _TennisSetupState extends State<TennisSetup> {
       int questionNumber, int answerNumber, String label) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _answersSelected[questionNumber] = answerNumber;
-              });
-            },
-            child: Container(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _answersSelected[questionNumber] = answerNumber;
+          });
+        },
+        child: Row(
+          children: [
+            Container(
               height: 16,
               width: 16,
               decoration: BoxDecoration(
@@ -278,15 +289,15 @@ class _TennisSetupState extends State<TennisSetup> {
                       color: const Color.fromARGB(255, 54, 54, 54),
                       width: 1.6)),
             ),
-          ),
-          SizedBox(
-            width: displayWidth(context) * 0.08,
-          ),
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-        ],
+            SizedBox(
+              width: displayWidth(context) * 0.08,
+            ),
+            Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -324,6 +335,8 @@ class _TennisSetupState extends State<TennisSetup> {
   }
 
   void _updateUserData() {
+    int _newELO = _calculateNewELO(_answersSelected[0], _answersSelected[1],
+        _answersSelected[2], _answersSelected[3]);
 //create updated userData
     UserData newUser = UserData(
         UID: Auth().currentUser!.uid,
@@ -333,8 +346,7 @@ class _TennisSetupState extends State<TennisSetup> {
         dateOfBirth: widget.currentUserData.dateOfBirth,
         sex: widget.currentUserData.sex,
         bio: widget.currentUserData.bio,
-        ELO: _calculateNewELO(
-            _answersSelected[0], _answersSelected[1], _answersSelected[2]),
+        ELO: _newELO,
         hasSetupAccount: true,
         gamesPlayed: [],
         friendsList: [],
@@ -342,7 +354,10 @@ class _TennisSetupState extends State<TennisSetup> {
         reputation: 0.0,
         dateJoined: DateTime.now(),
         comments: [],
-        friendRequests: []);
+        friendRequests: [],
+        ELOHistory: [
+          _newELO,
+        ]);
 
     //update firebase instace of this user
     final json = newUser.toJson();
@@ -365,31 +380,47 @@ class _TennisSetupState extends State<TennisSetup> {
 
 //all the parameters are values from 0 to 3 - representing the users answers
   int _calculateNewELO(
-      int experienceLevel, int playingDuration, int playingFrequency) {
-    // Map the parameter values from the range of 1-4 to 0-3 for easier calculation
-    experienceLevel -= 1;
-    playingDuration -= 1;
-    playingFrequency -= 1;
+      int playTime, int competitionLevel, int playFrequency, int lessonTime) {
+    //base ELO, if a user has the lowest on all questions, this is his ELO
+    int baseELO = 20;
 
-    // Calculate the ELO value based on the user's experience level, playing duration, and playing frequency
-    double baseElo = (experienceLevel * 100) /
-        3; // Beginner=133.33, Intermediate=266.67, Advanced=400
-    double durationBonus =
-        (playingDuration * 20) / 3; // 1 hour = 6.67 ELO points
-    double frequencyBonus =
-        (playingFrequency * 25) / 3; // 1 time per month = 8.33 ELO points
-    double totalElo = baseElo + durationBonus + frequencyBonus;
+    // Calculate the user's total play time
+    int totalPlayTime = (playTime - 1) * 30;
 
-    // Map the ELO value from the range of 0-100 to 0-99, and then round it to the nearest integer
-    int elo = (totalElo / 100 * 99).round();
+    // Calculate the user's competition level multiplier
+    int competitionMultiplier = (competitionLevel - 1) * 50;
 
-    // Ensure that the ELO value is within the range of 0-99
-    if (elo < 0) {
-      elo = 0;
-    } else if (elo > 99) {
-      elo = 99;
+    // Calculate the user's play frequency multiplier
+    int playFrequencyMultiplier = (playFrequency - 1) * 20;
+
+    // Calculate the user's lesson time multiplier
+    int lessonMultiplier = (lessonTime - 1) * 20;
+
+    // Calculate the user's total rating
+    int rating = baseELO +
+        totalPlayTime +
+        competitionMultiplier +
+        playFrequencyMultiplier +
+        lessonMultiplier;
+
+    // Make sure the rating is within the range of 0 to 200
+    if (rating > 200) {
+      return 200;
+    } else if (rating < 0) {
+      return 0;
+    } else {
+      return rating;
     }
+  }
 
-    return elo;
+  Widget _showPopupDialog(BuildContext context) {
+    return AlertDialog(
+      insetPadding: const EdgeInsets.all(12),
+      contentPadding: const EdgeInsets.all(14),
+      content: Text(
+        "Give a short description of yourself, think of what you would like to know about a person your going to play against.",
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+    );
   }
 }

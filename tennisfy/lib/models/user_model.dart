@@ -20,6 +20,7 @@ class UserData {
   List<Comment> comments;
   List<String>
       friendRequests; //list with UID that sent this user a friend request
+  List<int> ELOHistory;
 
   UserData(
       {required this.UID,
@@ -37,7 +38,8 @@ class UserData {
       required this.reputation,
       required this.dateJoined,
       required this.comments,
-      required this.friendRequests});
+      required this.friendRequests,
+      required this.ELOHistory});
 
   Map<String, dynamic> toJson() => {
         'UID': UID,
@@ -55,7 +57,8 @@ class UserData {
         'Reputation': reputation,
         'DateJoined': dateToFirebase(dateJoined),
         'CommentsList': jsonEncode(comments),
-        'FriendRequests': jsonEncode(friendRequests)
+        'FriendRequests': jsonEncode(friendRequests),
+        'ELOHistory': jsonEncode(ELOHistory),
       };
 
   ///
@@ -84,7 +87,8 @@ class UserData {
         reputation: json['Reputation'],
         dateJoined: dateFromFirebase(json['DateJoined']),
         comments: commentsJsonList.cast<Comment>(),
-        friendRequests: friendRequestsJsonList.cast<String>());
+        friendRequests: friendRequestsJsonList.cast<String>(),
+        ELOHistory: jsonDecode(json['ELOHistory']));
   }
 
   ///can be in helpers file

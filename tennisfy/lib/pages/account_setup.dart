@@ -97,7 +97,7 @@ class _AccountSetupState extends State<AccountSetup> {
                                 const BorderRadius.all(Radius.circular(10)),
                             boxShadow: [
                               BoxShadow(
-                                offset: const Offset(0, 0),
+                                offset: Offset(0, 0),
                                 blurRadius: 8.0,
                                 spreadRadius: 0.5,
                                 color: const Color.fromARGB(255, 59, 59, 59)
@@ -143,7 +143,7 @@ class _AccountSetupState extends State<AccountSetup> {
                                 const BorderRadius.all(Radius.circular(10)),
                             boxShadow: [
                               BoxShadow(
-                                offset: const Offset(0, 0),
+                                offset: Offset(0, 0),
                                 blurRadius: 8.0,
                                 spreadRadius: 0.5,
                                 color: const Color.fromARGB(255, 59, 59, 59)
@@ -180,7 +180,7 @@ class _AccountSetupState extends State<AccountSetup> {
                                 const BorderRadius.all(Radius.circular(10)),
                             boxShadow: [
                               BoxShadow(
-                                offset: const Offset(0, 0),
+                                offset: Offset(0, 0),
                                 blurRadius: 8.0,
                                 spreadRadius: 0.5,
                                 color: const Color.fromARGB(255, 59, 59, 59)
@@ -221,7 +221,7 @@ class _AccountSetupState extends State<AccountSetup> {
                         color: Theme.of(context).colorScheme.tertiary,
                         boxShadow: [
                           BoxShadow(
-                            offset: const Offset(0, 0),
+                            offset: Offset(0, 0),
                             blurRadius: 8.0,
                             spreadRadius: 0.5,
                             color: const Color.fromARGB(255, 59, 59, 59)
@@ -300,7 +300,7 @@ class _AccountSetupState extends State<AccountSetup> {
                         color: Theme.of(context).colorScheme.tertiary,
                         boxShadow: [
                           BoxShadow(
-                            offset: const Offset(0, 0),
+                            offset: Offset(0, 0),
                             blurRadius: 8.0,
                             spreadRadius: 0.5,
                             color: const Color.fromARGB(255, 59, 59, 59)
@@ -396,7 +396,8 @@ class _AccountSetupState extends State<AccountSetup> {
                                             reputation: 0,
                                             dateJoined: DateTime.now(),
                                             comments: [],
-                                            friendRequests: []),
+                                            friendRequests: [],
+                                            ELOHistory: []),
                                       ));
                                 }
                               },

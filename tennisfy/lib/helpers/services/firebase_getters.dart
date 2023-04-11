@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'package:flutter/material.dart';
 import '../../Models/comment_model.dart';
+import '../../models/game_model.dart';
 import '../../models/user_model.dart';
 import '../auth.dart';
 
@@ -25,7 +26,17 @@ Future<UserData> getUserData(String userUID) async {
 }
 
 ///
-///Return a strem of a users data
+///Retrieves a user data snapshot from firebase cloud 
+///
+Future<DocumentSnapshot> getUserDataSnapshot(String userUID) async {
+  final DocumentSnapshot userDoc =
+      await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
+
+  return userDoc;
+}
+
+///
+///Return a stream of a all users data as snapshots
 ///
 Stream<DocumentSnapshot<Map<String, dynamic>>> getUserDataStream(
     String userUID) {
@@ -56,6 +67,36 @@ Future<String> getBannerImageURL(String userUID) async {
       .getDownloadURL();
 
   return imageURL;
+}
+
+///
+///Retrives the percentage in which the user ELO is located
+///
+Future<int> getUserELOTopPercentage(String userUID) async {
+  List<int> allUsersELOList = [];
+  int userELO = await getUserELO(userUID);
+
+//this block of code adds every users ELO to the list
+  CollectionReference _documentRef =
+      FirebaseFirestore.instance.collection("Users");
+  QuerySnapshot querySnapshot = await _documentRef.get();
+  for (var documentSnapshot in querySnapshot.docs) {
+    allUsersELOList.add(documentSnapshot.get('ELO') as int);
+  }
+
+  // Sort the user list in descending order based on ELO value
+  allUsersELOList.sort((a, b) => a.compareTo(b));
+
+  // Calculate the index of the user's ELO value in the sorted list
+  int userIndex = allUsersELOList.indexWhere((user) => user == userELO);
+
+  // Calculate the percentage of users whose ELO value is higher than the user's
+  double topPercentage =
+      (allUsersELOList.length - userIndex) / allUsersELOList.length * 100;
+
+  debugPrint(topPercentage.toString());
+
+  return topPercentage.toInt();
 }
 
 ///
@@ -99,6 +140,16 @@ Future<String> getUserBio(String userUID) async {
       await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
 
   return userDoc.get('Biography');
+}
+
+///
+///Retrieves user ELO
+///
+Future<int> getUserELO(String userUID) async {
+  final DocumentSnapshot userDoc =
+      await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
+
+  return userDoc.get('ELO');
 }
 
 ///
@@ -165,13 +216,13 @@ Future<int> getUserNumberOfGamesPLayed(String userUID) async {
 }
 
 ///
-///Retreives a map with the sports the current user plays
+///retrieves the users next games list ??should it be a stream??
 ///
-Future<Map<String, dynamic>> getUserSportsPlayedList(String userUID) async {
+Future<List<Game>> getUserNextGamesList(String userUID) async {
   final DocumentSnapshot userDoc =
       await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
 
-  return jsonDecode(userDoc.get('SportsPlayed'));
+  return (jsonDecode(userDoc.get('NextGamesList')) as List).cast<Game>();
 }
 
 ///

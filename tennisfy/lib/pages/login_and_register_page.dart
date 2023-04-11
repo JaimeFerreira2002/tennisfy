@@ -239,7 +239,8 @@ class _LoginAndRegisterPageState extends State<LoginAndRegisterPage> {
           reputation: 0.0,
           dateJoined: DateTime.now(),
           comments: [],
-          friendRequests: []);
+          friendRequests: [],
+          ELOHistory: []);
 
       await Auth().createUserWithEmailAndPassowrd(
         email: _emailController.text,

@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           //title big
           headline1: TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 40,
+              fontSize: 34,
               color: Color.fromARGB(255, 41, 41, 41),
               fontWeight: FontWeight.w900),
           //used for smaller text

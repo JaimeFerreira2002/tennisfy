@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tennisfy/helpers/services/firebase_getters.dart';
-import 'package:tennisfy/pages/home_page.dart';
+import 'package:tennisfy/pages/elo_show_page.dart';
+import 'package:tennisfy/pages/nav_bar.dart';
 
 import '../pages/login_and_register_page.dart';
 import '../pages/verify_email_page.dart';
@@ -38,7 +39,7 @@ class _WidgetTreeState extends State<WidgetTree> {
                 );
               } else {
                 if (userData.data == true) {
-                  return const HomePage();
+                  return const NavBar();
                 } else {
                   return const VerifyEmailPage();
                 }
