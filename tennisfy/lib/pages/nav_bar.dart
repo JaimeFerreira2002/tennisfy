@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:tennisfy/components/costum_appBar.dart';
 import 'package:tennisfy/pages/find_page.dart';
 import 'package:tennisfy/pages/history_page.dart';
 import 'home_page.dart';
@@ -18,6 +19,7 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: costunAppBar(context),
         bottomNavigationBar: Container(
           height: 90,
           child: GNav(

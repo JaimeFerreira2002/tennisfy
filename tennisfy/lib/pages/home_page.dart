@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:tennisfy/helpers/helper_methods.dart';
+import 'package:tennisfy/components/costum_appBar.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/helpers/services/firebase_getters.dart';
 import 'package:tennisfy/models/game_model.dart';
-import 'package:tennisfy/pages/settings_page.dart';
 import '../helpers/auth.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,7 +18,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(context),
       body: StreamBuilder(
           stream: getUserDataStream(Auth().currentUser!.uid),
           builder: (context, AsyncSnapshot snapshot) {
@@ -46,7 +44,7 @@ class _HomePageState extends State<HomePage> {
                       style: Theme.of(context).textTheme.headline1,
                     ),
                   ),
-                  SizedBox(height: displayHeight(context) * 0.035),
+                  SizedBox(height: displayHeight(context) * 0.025),
                   _statsCard(context, ELOHistoryList, snapshot, _gamesPlayed),
                   SizedBox(height: displayHeight(context) * 0.05),
                   Row(
@@ -55,7 +53,7 @@ class _HomePageState extends State<HomePage> {
                       const Text(
                         "Your next Games",
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w900),
+                            fontSize: 20, fontWeight: FontWeight.w200),
                       ),
                       IconButton(
                           onPressed: () {},
@@ -65,9 +63,15 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: Container(
                         child: _gamesPlayed.isEmpty
-                            ? const Center(
-                                child:
-                                    Text("You are yet to play your first game"),
+                            ? Center(
+                                child: Text(
+                                  "You are yet to play your first game",
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withOpacity(0.6)),
+                                ),
                               )
                             : FutureBuilder(
                                 future: getUserNextGamesList(
@@ -172,7 +176,9 @@ class _HomePageState extends State<HomePage> {
             children: [
               Column(
                 children: [
-                  const Text("Current ELO", style: TextStyle(fontSize: 12)),
+                  const Text("Current ELO",
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                   Text(
                     snapshot.data.get('ELO').toString(),
                     style: const TextStyle(
@@ -225,73 +231,6 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-    );
-  }
-
-  AppBar appBar(BuildContext context) {
-    return AppBar(
-      title: Image.asset(
-        "assets/images/logo.png",
-      ),
-      bottom: PreferredSize(
-        child: Container(
-          color: Theme.of(context)
-              .colorScheme
-              .primary
-              .withOpacity(0.2), // choose your desired color
-          height: 1.0, // choose your desired height
-        ),
-        preferredSize: const Size.fromHeight(1.0),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 30, 0),
-          child: GestureDetector(
-            onTap: () {},
-            child: Row(
-              children: [
-                FutureBuilder(
-                  future: getProfileImageURL(Auth().currentUser!.uid),
-                  initialData: "Loading...",
-                  builder: ((context, AsyncSnapshot<String> snapshot) {
-                    return CircleAvatar(
-                        radius: 18,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        backgroundImage: snapshot.data != null
-                            ? Image.network(snapshot.data!).image
-                            : Image.network(
-                                    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-                                .image);
-                  }),
-                ),
-                SizedBox(
-                  width: displayWidth(context) * 0.04,
-                ),
-                FutureBuilder(
-                  initialData: "Loading",
-                  future: getUserFullName(Auth().currentUser!.uid),
-                  builder: ((context, AsyncSnapshot<String> snapshot) {
-                    debugPrint(snapshot.data);
-                    return Text(
-                      snapshot.data!,
-                      //here we need a costum text style, non of the establushed fits good
-                    );
-                  }),
-                ),
-              ],
-            ),
-          ),
-        ),
-        IconButton(
-            onPressed: () {
-              goToPage(context, SettingsPage());
-            },
-            icon: Icon(
-              Icons.settings_rounded,
-              size: 30,
-              color: Theme.of(context).colorScheme.primary,
-            ))
-      ],
     );
   }
 

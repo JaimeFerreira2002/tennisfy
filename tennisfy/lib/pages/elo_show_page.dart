@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tennisfy/helpers/auth.dart';
-import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/helpers/services/firebase_getters.dart';
 import 'package:tennisfy/pages/nav_bar.dart';
@@ -75,7 +74,7 @@ class _EloShowPageState extends State<EloShowPage> {
                       return GestureDetector(
                         onTap: () {
                           _InfoPopUps(context,
-                              'Our algorithm is widely recognized as an effective way to calculate a users ELO rating. By taking into account multiple factors that can impact a users performance, the algorithm provides a comprehensive and fair assessment of their abilities. Additionally, the use of capped maximum and minimum values ensures that the rating falls within a reasonable range, providing users with a clear understanding of their performance. ');
+                              'By taking into account multiple factors that can impact a users performance, our algorithm provides a comprehensive and fair assessment of their abilities. Additionally, the use of capped maximum and minimum values ensures that the rating falls within a reasonable range, providing users with a clear understanding of their performance. ');
                         },
                         child: const Text(
                           "How is my starting ELO calculated ?",

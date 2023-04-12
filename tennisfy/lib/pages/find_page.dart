@@ -1,6 +1,4 @@
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/material.dart';
 
 class FindPage extends StatefulWidget {
   const FindPage({Key? key}) : super(key: key);
@@ -12,6 +10,11 @@ class FindPage extends StatefulWidget {
 class _FindPageState extends State<FindPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Center(
+        child: Column(),
+      ),
+    );
+    ;
   }
 }

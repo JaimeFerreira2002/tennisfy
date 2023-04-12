@@ -44,7 +44,7 @@ class _AccountSetupState extends State<AccountSetup> {
             height: displayHeight(context),
             child: Padding(
               //padding for the whole page, then we use indidual pasddings for space between, this one is necessary to ajust top and bottom page
-              padding: const EdgeInsets.fromLTRB(14, 40, 14, 20),
+              padding: const EdgeInsets.fromLTRB(14, 70, 14, 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
