@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
           stream: getUserDataStream(Auth().currentUser!.uid),
           builder: (context, AsyncSnapshot snapshot) {
             if (!snapshot.hasData) {
+              //explore how we can use a skeleton here instead of this if condition
               return const Center(child: CircularProgressIndicator());
             }
             //this list is necessary to repeat here because of other widgets in home page

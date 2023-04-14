@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
           //text for green big buttons
           button: TextStyle(
               fontFamily: 'Poppins',
-              fontSize: 28,
+              fontSize: 20,
               color: Color.fromARGB(255, 255, 255, 255),
               fontWeight: FontWeight.w900),
         ),

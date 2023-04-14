@@ -10,3 +10,28 @@ Container smallVerticalDivider(BuildContext context) {
         color: Theme.of(context).colorScheme.primary.withOpacity(0.4)),
   );
 }
+
+//try to use this button to simplify
+
+// Container greenFlatTextButton(BuildContext context, double height, double width,
+//     Function onPressed, String label, double borderRadius) {
+//   return Container(
+//     width: width,
+//     height: height,
+//     child: Center(
+//         child: TextButton(
+//             style: TextButton.styleFrom(
+//               backgroundColor: Theme.of(context).colorScheme.secondary,
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(borderRadius),
+//               ),
+//             ),
+//             onPressed: () {
+//               onPressed;
+//             },
+//             child: Text(
+//               label,
+//               style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+//             ))),
+//   );
+// }

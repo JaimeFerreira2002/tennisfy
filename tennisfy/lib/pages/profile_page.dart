@@ -7,6 +7,7 @@ import 'package:tennisfy/components/others.dart';
 import 'package:tennisfy/components/stats_card.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/models/comment_model.dart';
+import 'package:tennisfy/pages/profile_edit_page.dart';
 import '../helpers/auth.dart';
 import '../helpers/helper_methods.dart';
 import '../helpers/services/firebase_getters.dart';
@@ -66,80 +67,207 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      height: displayHeight(context) * 0.26,
                       child: Column(
                         children: [
-                          FutureBuilder(
-                            future: getProfileImageURL(widget.userUID),
-                            initialData: "Loading...",
-                            builder:
-                                ((context, AsyncSnapshot<String> snapshot) {
-                              return CircleAvatar(
-                                  radius: 70,
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.primary,
-                                  backgroundImage: snapshot.data != null
-                                      ? Image.network(snapshot.data!).image
-                                      : Image.network(
-                                              "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-                                          .image);
-                            }),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              FutureBuilder(
+                                future: getProfileImageURL(widget.userUID),
+                                initialData: "Loading...",
+                                builder:
+                                    ((context, AsyncSnapshot<String> snapshot) {
+                                  return CircleAvatar(
+                                      radius: 65,
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      backgroundImage: snapshot.data != null
+                                          ? Image.network(snapshot.data!).image
+                                          : Image.network(
+                                                  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+                                              .image);
+                                }),
+                              ),
+                              Column(
+                                children: [
+                                  Text(
+                                    snapshot.data.get('FirstName') +
+                                        " " +
+                                        snapshot.data.get('LastName'),
+                                    style: const TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                  Text(
+                                    snapshot.data.get('Email'),
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary
+                                            .withOpacity(0.4)),
+                                  ),
+                                  Text(
+                                    "Joined in " +
+                                        dateFromFirebase(
+                                                snapshot.data.get('DateJoined'))
+                                            .day
+                                            .toString() +
+                                        ' / ' +
+                                        dateFromFirebase(
+                                                snapshot.data.get('DateJoined'))
+                                            .month
+                                            .toString() +
+                                        ' / ' +
+                                        dateFromFirebase(
+                                                snapshot.data.get('DateJoined'))
+                                            .year
+                                            .toString(),
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary
+                                            .withOpacity(0.4)),
+                                  ),
+                                  SizedBox(
+                                      height: displayHeight(context) * 0.02),
+                                  Container(
+                                    height: displayHeight(context) * 0.05,
+                                    width: displayWidth(context) * 0.55,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(8)),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          offset: const Offset(0, 0),
+                                          blurRadius: 8.0,
+                                          spreadRadius: 0.5,
+                                          color: const Color.fromARGB(
+                                                  255, 59, 59, 59)
+                                              .withOpacity(0.2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                                AgeCalculator.age(
+                                                        dateFromFirebase(
+                                                            snapshot.data.get(
+                                                                'DateOfBirth')))
+                                                    .years
+                                                    .toString(),
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w900)),
+                                            const Text("Years",
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                          ],
+                                        ),
+                                        Container(
+                                          width: displayWidth(context) * 0.004,
+                                          height: displayHeight(context) * 0.02,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withOpacity(0.4)),
+                                        ),
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              snapshot.data
+                                                  .get('Reputation')
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w900),
+                                            ),
+                                            const Text("Reputation",
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                          ],
+                                        ),
+                                        Container(
+                                          width: displayWidth(context) * 0.004,
+                                          height: displayHeight(context) * 0.02,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withOpacity(0.4)),
+                                        ),
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                                (jsonDecode(snapshot.data
+                                                            .get('FriendsList'))
+                                                        as List)
+                                                    .length
+                                                    .toString(),
+                                                style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w900)),
+                                            const Text("Friends",
+                                                style: TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
                           ),
-                          SizedBox(height: displayHeight(context) * 0.015),
-                          Text(
-                            snapshot.data.get('FirstName') +
-                                " " +
-                                snapshot.data.get('LastName'),
-                            style: const TextStyle(fontSize: 26),
-                          ),
-                          Text(
-                            snapshot.data.get('Email'),
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.4)),
-                          ),
-                          Text(
-                            "Joined in " +
-                                dateFromFirebase(
-                                        snapshot.data.get('DateJoined'))
-                                    .day
-                                    .toString() +
-                                ' / ' +
-                                dateFromFirebase(
-                                        snapshot.data.get('DateJoined'))
-                                    .month
-                                    .toString() +
-                                ' / ' +
-                                dateFromFirebase(
-                                        snapshot.data.get('DateJoined'))
-                                    .year
-                                    .toString(),
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.4)),
-                          )
                         ],
                       ),
                     ),
+                    SizedBox(height: displayHeight(context) * 0.008),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
                           height: displayHeight(context) * 0.05,
-                          width: displayWidth(context) * 0.6,
+                          width: displayWidth(context) * 0.9,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.secondary,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Center(
                             child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  widget.userUID == Auth().currentUser!.uid
+                                      ? goToPage(context, ProfileEditPage())
+                                      : {}; //challenge user;
+                                },
                                 child: Text(
                                   widget.userUID == Auth().currentUser!.uid
                                       ? "Edit"
@@ -154,80 +282,28 @@ class _ProfilePageState extends State<ProfilePage> {
                         )
                       ],
                     ),
-                    Container(
-                      height: displayHeight(context) * 0.075,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.tertiary,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                        boxShadow: [
-                          BoxShadow(
-                            offset: const Offset(0, 0),
-                            blurRadius: 8.0,
-                            spreadRadius: 0.5,
-                            color: const Color.fromARGB(255, 59, 59, 59)
-                                .withOpacity(0.2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                  AgeCalculator.age(dateFromFirebase(
-                                          snapshot.data.get('DateOfBirth')))
-                                      .years
-                                      .toString(),
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w900)),
-                              const Text("Years"),
-                            ],
-                          ),
-                          smallVerticalDivider(context),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                snapshot.data.get('Reputation').toString(),
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w900),
-                              ),
-                              const Text("Reputation"),
-                            ],
-                          ),
-                          smallVerticalDivider(context),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                  (jsonDecode(snapshot.data.get('FriendsList'))
-                                          as List)
-                                      .length
-                                      .toString(),
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w900)),
-                              const Text("Friends"),
-                            ],
-                          ),
-                        ],
+                    //are sized boxs needed here? or mainAxisAliment should be enough?
+                    SizedBox(height: displayHeight(context) * 0.002),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Record",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w900),
                       ),
                     ),
                     statsCard(context, snapshot),
-                    SizedBox(height: displayHeight(context) * 0.00),
+                    SizedBox(height: displayHeight(context) * 0.008),
                     const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         "Comments",
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w900),
                       ),
                     ),
                     Container(
-                      height: displayHeight(context) * 0.14,
+                      height: displayHeight(context) * 0.25,
                       child: _commentsList.isEmpty
                           ? Center(
                               child: Text(
@@ -237,7 +313,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             )
                           //here we use PageView instead of ListView for elements to snap
                           : ListView.builder(
-                              controller: PageController(viewportFraction: 0.6),
+                              controller: PageController(viewportFraction: 1),
                               physics: const PageScrollPhysics(),
                               scrollDirection: Axis.vertical,
                               itemCount: _commentsList.length,
@@ -246,7 +322,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                                 return Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                      const EdgeInsets.fromLTRB(4, 8, 4, 8),
                                   child: Container(
                                     height: displayHeight(context) * 0.08,
                                     decoration: BoxDecoration(
@@ -368,6 +444,25 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     fontSize: 12),
                                               )
                                             ],
+                                          ),
+                                          SizedBox(
+                                              width:
+                                                  displayWidth(context) * 0.2),
+                                          Text(
+                                            comment.datePosted.day.toString() +
+                                                " / " +
+                                                comment.datePosted.month
+                                                    .toString() +
+                                                " / " +
+                                                comment.datePosted.year
+                                                    .toString(),
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w900,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary
+                                                    .withOpacity(0.2)),
                                           ),
                                         ],
                                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:tennisfy/helpers/services/firebase_getters.dart';
 import 'package:tennisfy/pages/profile_page.dart';
 import '../helpers/auth.dart';
@@ -47,10 +48,9 @@ AppBar costunAppBar(BuildContext context) {
                 width: displayWidth(context) * 0.02,
               ),
               FutureBuilder(
-                initialData: "Loading",
                 future: getUserFullName(Auth().currentUser!.uid),
+                initialData: "Loading...",
                 builder: ((context, AsyncSnapshot<String> snapshot) {
-                  debugPrint(snapshot.data);
                   return Text(
                     snapshot.data!,
 

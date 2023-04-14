@@ -46,6 +46,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.1.55
   syncfusion_flutter_core: ^20.1.55
   age_calculator: ^1.0.0
+  skeletons: ^0.0.3
   
 
 
