@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import '../../Models/comment_model.dart';
+
+import '../../models/comment_model.dart';
 import '../../models/game_model.dart';
 import '../../models/user_model.dart';
 import '../auth.dart';
+import '../helper_methods.dart';
 
 ///
 ///Retrieves the bool value - if the user already varified his email
@@ -26,7 +28,7 @@ Future<UserData> getUserData(String userUID) async {
 }
 
 ///
-///Retrieves a user data snapshot from firebase cloud 
+///Retrieves a user data snapshot from firebase cloud
 ///
 Future<DocumentSnapshot> getUserDataSnapshot(String userUID) async {
   final DocumentSnapshot userDoc =
@@ -160,7 +162,7 @@ Future<DateTime> getUserDateOfBirth(String userUID) async {
   final DocumentSnapshot userDoc =
       await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
 
-  return UserData.dateFromFirebase(userDoc.get('DateOfBirth'));
+  return dateFromFirebase(userDoc.get('DateOfBirth'));
 }
 
 ///
@@ -205,6 +207,33 @@ Future<List<String>> getUserFriendsList(String userUID) async {
   return userDoc.get('FriendsList');
 }
 
+// void addGamePlayed(String player1, String player2) async {
+//     Game newGame =
+//         Game(isCompetitive: false, player1UID: player1, player2UID: player2);
+
+//     List<Game> _gamesPlayed = await getUserGamesPlayed(player1);
+//     print("List of games: " + _gamesPlayed.toString());
+//     _gamesPlayed.add(newGame);
+
+//     await FirebaseFirestore.instance
+//         .collection('Users')
+//         .doc(player1)
+//         .update({'GamesPlayed': jsonEncode(_gamesPlayed)});
+//   }
+
+///
+///Retrieves list of games the user played
+///
+Future<List<Game>> getUserGamesPlayed(String userUID) async {
+  final DocumentSnapshot userDoc =
+      await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
+
+  return jsonDecode(userDoc.get('GamesPlayed'))
+      .map((gameJson) => Game.fromJson(gameJson))
+      .toList()
+      .cast<Game>();
+}
+
 ///
 ///Retrieves number of games the user played
 ///
@@ -232,9 +261,10 @@ Future<List<Comment>> getUserCommentsList(String userUID) async {
   final DocumentSnapshot userDoc =
       await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
 
-  List<dynamic> _tempList = jsonDecode(userDoc.get('CommentsList'));
-
-  return _tempList.cast<Comment>();
+  return jsonDecode(userDoc.get('CommentsList'))
+      .map((commentJson) => Comment.fromJson(commentJson))
+      .toList()
+      .cast<Comment>();
 }
 
 ///

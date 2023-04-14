@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tennisfy/helpers/services/firebase_getters.dart';
+import 'package:tennisfy/pages/profile_page.dart';
 import '../helpers/auth.dart';
 import '../helpers/helper_methods.dart';
 import '../helpers/media_query_helpers.dart';
@@ -15,7 +16,7 @@ AppBar costunAppBar(BuildContext context) {
             .colorScheme
             .primary
             .withOpacity(0.2), // choose your desired color
-        height: 1.0, // choose your desired height
+        height: 1.5, // choose your desired height
       ),
       preferredSize: const Size.fromHeight(0.0),
     ),
@@ -23,7 +24,9 @@ AppBar costunAppBar(BuildContext context) {
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
         child: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            goToPage(context, ProfilePage(userUID: Auth().currentUser!.uid));
+          },
           child: Row(
             children: [
               FutureBuilder(

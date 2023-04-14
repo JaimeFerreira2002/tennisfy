@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tennisfy/helpers/services/firebase_getters.dart';
+import 'package:tennisfy/pages/account_setup.dart';
 import 'package:tennisfy/pages/elo_show_page.dart';
 import 'package:tennisfy/pages/nav_bar.dart';
 

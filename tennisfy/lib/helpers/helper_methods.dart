@@ -20,3 +20,20 @@ Route pageTransition(Widget pageToGo) {
 void goToPage(BuildContext context, Widget pageToGo) {
   Navigator.push(context, pageTransition(pageToGo));
 }
+
+Map dateToFirebase(DateTime date) {
+  return {
+    'Day': date.day,
+    'Month': date.month,
+    'Year': date.year,
+  };
+}
+
+DateTime dateFromFirebase(Map<String, dynamic> encoded) {
+  var day = encoded['Day'];
+  var month = encoded['Month'];
+  var year = encoded['Year'];
+  DateTime dateTime = DateTime(year, month, day);
+
+  return dateTime;
+}

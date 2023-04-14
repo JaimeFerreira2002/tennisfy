@@ -23,9 +23,10 @@ class MyApp extends StatelessWidget {
           secondary: const Color(0xff9ec891),
           tertiary: const Color.fromARGB(255, 255, 255, 255),
         ),
+        fontFamily: 'Poppins',
         appBarTheme: const AppBarTheme(
             elevation: 0,
-            toolbarHeight: 70,
+            toolbarHeight: 60,
             backgroundColor: Colors.white,
             titleTextStyle: TextStyle(
               fontSize: 16,

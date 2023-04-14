@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:tennisfy/Models/comment_model.dart';
+import 'package:tennisfy/models/comment_model.dart';
+import '../helpers/helper_methods.dart';
 import 'game_model.dart';
 
 class UserData {
@@ -89,23 +90,5 @@ class UserData {
         comments: commentsJsonList.cast<Comment>(),
         friendRequests: friendRequestsJsonList.cast<String>(),
         ELOHistory: jsonDecode(json['ELOHistory']));
-  }
-
-  ///can be in helpers file
-  static Map dateToFirebase(DateTime date) {
-    return {
-      'Day': date.day,
-      'Month': date.month,
-      'Year': date.year,
-    };
-  }
-
-  static DateTime dateFromFirebase(Map<String, dynamic> encoded) {
-    var day = encoded['Day'];
-    var month = encoded['Month'];
-    var year = encoded['Year'];
-    DateTime dateTime = DateTime(year, month, day);
-
-    return dateTime;
   }
 }

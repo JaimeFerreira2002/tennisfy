@@ -45,6 +45,7 @@ dependencies:
   google_nav_bar: ^5.0.6
   syncfusion_flutter_charts: ^20.1.55
   syncfusion_flutter_core: ^20.1.55
+  age_calculator: ^1.0.0
   
 
 

@@ -251,8 +251,6 @@ class _LoginAndRegisterPageState extends State<LoginAndRegisterPage> {
           .collection('Users')
           .doc(Auth().currentUser!.uid.toString())
           .set(json);
-
-      Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
       if (e.code == "invalid-email") {
         setState(() {
