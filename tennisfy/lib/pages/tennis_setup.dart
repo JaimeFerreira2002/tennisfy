@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/pages/elo_show_page.dart';
 import '../helpers/auth.dart';

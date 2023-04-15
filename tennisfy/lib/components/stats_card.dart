@@ -89,7 +89,9 @@ Container statsCard(BuildContext context, AsyncSnapshot<dynamic> snapshot) {
             smallVerticalDivider(context),
             Column(
               children: [
-                const Text("Games played", style: TextStyle(fontSize: 12)),
+                const Text("Games played",
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 Text(
                   gamesPlayed.length.toString(),
                   style: const TextStyle(
@@ -102,7 +104,7 @@ Container statsCard(BuildContext context, AsyncSnapshot<dynamic> snapshot) {
               children: [
                 const Text(
                   "Win/Lose",
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 ),
                 Text(
                   _numberOfWins.toString() +

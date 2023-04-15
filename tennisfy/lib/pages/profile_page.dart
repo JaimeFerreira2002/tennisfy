@@ -102,6 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     snapshot.data.get('Email'),
                                     style: TextStyle(
                                         fontSize: 10,
+                                        fontWeight: FontWeight.w600,
                                         color: Theme.of(context)
                                             .colorScheme
                                             .primary
@@ -125,6 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             .toString(),
                                     style: TextStyle(
                                         fontSize: 10,
+                                        fontWeight: FontWeight.w600,
                                         color: Theme.of(context)
                                             .colorScheme
                                             .primary
@@ -135,23 +137,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Container(
                                     height: displayHeight(context) * 0.05,
                                     width: displayWidth(context) * 0.55,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary,
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(8)),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          offset: const Offset(0, 0),
-                                          blurRadius: 8.0,
-                                          spreadRadius: 0.5,
-                                          color: const Color.fromARGB(
-                                                  255, 59, 59, 59)
-                                              .withOpacity(0.2),
-                                        ),
-                                      ],
-                                    ),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
@@ -168,14 +153,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     .years
                                                     .toString(),
                                                 style: const TextStyle(
-                                                    fontSize: 14,
+                                                    fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w900)),
                                             const Text("Years",
                                                 style: TextStyle(
-                                                    fontSize: 10,
+                                                    fontSize: 12,
                                                     fontWeight:
-                                                        FontWeight.w400)),
+                                                        FontWeight.w500)),
                                           ],
                                         ),
                                         Container(
@@ -198,14 +183,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   .get('Reputation')
                                                   .toString(),
                                               style: const TextStyle(
-                                                  fontSize: 14,
+                                                  fontSize: 16,
                                                   fontWeight: FontWeight.w900),
                                             ),
                                             const Text("Reputation",
                                                 style: TextStyle(
-                                                    fontSize: 10,
+                                                    fontSize: 12,
                                                     fontWeight:
-                                                        FontWeight.w400)),
+                                                        FontWeight.w500)),
                                           ],
                                         ),
                                         Container(
@@ -230,14 +215,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     .length
                                                     .toString(),
                                                 style: const TextStyle(
-                                                    fontSize: 14,
+                                                    fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w900)),
                                             const Text("Friends",
                                                 style: TextStyle(
-                                                    fontSize: 10,
+                                                    fontSize: 12,
                                                     fontWeight:
-                                                        FontWeight.w400)),
+                                                        FontWeight.w500)),
                                           ],
                                         ),
                                       ],
@@ -261,24 +246,21 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Theme.of(context).colorScheme.secondary,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Center(
-                            child: TextButton(
-                                onPressed: () {
-                                  widget.userUID == Auth().currentUser!.uid
-                                      ? goToPage(context, ProfileEditPage())
-                                      : {}; //challenge user;
-                                },
-                                child: Text(
-                                  widget.userUID == Auth().currentUser!.uid
-                                      ? "Edit"
-                                      : "Challenge",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary),
-                                )),
-                          ),
+                          child: TextButton(
+                              onPressed: () {
+                                widget.userUID == Auth().currentUser!.uid
+                                    ? goToPage(context, const ProfileEditPage())
+                                    : {}; //challenge user;
+                              },
+                              child: Text(
+                                widget.userUID == Auth().currentUser!.uid
+                                    ? "Edit"
+                                    : "Challenge",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
+                              )),
                         )
                       ],
                     ),
@@ -447,14 +429,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                           SizedBox(
                                               width:
-                                                  displayWidth(context) * 0.2),
+                                                  displayWidth(context) * 0.24),
                                           Text(
                                             comment.datePosted.day.toString() +
                                                 " / " +
                                                 comment.datePosted.month
-                                                    .toString() +
-                                                " / " +
-                                                comment.datePosted.year
                                                     .toString(),
                                             style: TextStyle(
                                                 fontSize: 12,
