@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:tennisfy/models/message_model.dart';
 
 import '../../models/comment_model.dart';
 import '../../models/game_model.dart';
@@ -54,18 +55,6 @@ Future<String> getProfileImageURL(String userUID) async {
   final imageURL = await FirebaseStorage.instance
       .ref()
       .child("ProfilePictures/" + userUID + ".jpg")
-      .getDownloadURL();
-
-  return imageURL;
-}
-
-///
-///Retrieves current user banner image
-///
-Future<String> getBannerImageURL(String userUID) async {
-  final imageURL = await FirebaseStorage.instance
-      .ref()
-      .child("BannerPictures/" + userUID + ".jpg")
       .getDownloadURL();
 
   return imageURL;
@@ -265,6 +254,98 @@ Future<List<Comment>> getUserCommentsList(String userUID) async {
       .map((commentJson) => Comment.fromJson(commentJson))
       .toList()
       .cast<Comment>();
+}
+
+///
+///
+///
+///
+Future<String> getOrCreateChatId(String otherUserUid) async {
+  String currentUserUid = Auth().currentUser!.uid;
+
+  final currentUserDocRef =
+      FirebaseFirestore.instance.collection('Users').doc(currentUserUid);
+  final currentUserData = await currentUserDocRef.get();
+
+  final currentUserChatIdsList =
+      jsonDecode(currentUserData.data()!['ChatsIDsList']);
+
+  final otherUserDocRef =
+      FirebaseFirestore.instance.collection('Users').doc(otherUserUid);
+  final otherUserData = await otherUserDocRef.get();
+
+  final otherUserChatIdsList =
+      jsonDecode(otherUserData.data()!['ChatsIDsList']);
+
+  // Check if there's an existing chat with the other user
+  for (final chatId in currentUserChatIdsList) {
+    final chatDocRef =
+        FirebaseFirestore.instance.collection('Chats').doc(chatId);
+    final chatData = await chatDocRef.get();
+    final user1 = chatData['User1'];
+    final user2 = chatData['User2'];
+
+    if ((user1 == currentUserUid && user2 == otherUserUid) ||
+        (user1 == otherUserUid && user2 == currentUserUid)) {
+      // Found an existing chat with the other user, return the chat ID
+      return chatId;
+    }
+  }
+
+  // No existing chat with the other user, create a new chat document
+  final chatsCollectionRef = FirebaseFirestore.instance.collection('Chats');
+  final newChatDocRef = chatsCollectionRef.doc();
+  final newChatId = newChatDocRef.id;
+
+  await newChatDocRef.set({
+    'User1': currentUserUid,
+    'User2': otherUserUid,
+  });
+
+  // Add the new chat ID to both  user's list of chats
+  currentUserChatIdsList.add(newChatId);
+  await currentUserDocRef.update({'Chats': currentUserChatIdsList});
+
+  otherUserChatIdsList.add(newChatId);
+  await otherUserDocRef.update({'Chats': otherUserChatIdsList});
+
+  return newChatId;
+}
+
+///
+///Retrives a stream of all messages from a chat document
+///
+Stream<List<Message>> getMessagesStream(String chatID) {
+  final chatDocRef = FirebaseFirestore.instance.collection('Chats').doc(chatID);
+  return chatDocRef
+      .collection('Messages')
+      .orderBy('TimeSent', descending: true)
+      .snapshots()
+      .map((querySnapshot) {
+    final messages = querySnapshot.docs
+        .map((doc) => Message.fromJson(doc.data()))
+        .toList()
+        .cast<Message>();
+    messages.sort((a, b) => a.timeSent.compareTo(b.timeSent));
+    return messages;
+  });
+}
+
+///
+///Send a message from sender to reciever
+///
+Future sendMessage(String senderUID, String recieverUID, String messageContent,
+    String chatID) async {
+  final messageCollection =
+      FirebaseFirestore.instance.collection('Chats/$chatID/Messages');
+
+  final Message _newMessage = Message(
+      senderUID: senderUID,
+      revieverUID: recieverUID,
+      message: messageContent,
+      isRead: false,
+      timeSent: DateTime.now());
+  messageCollection.add(_newMessage.toJson());
 }
 
 ///

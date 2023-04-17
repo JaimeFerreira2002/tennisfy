@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:skeletons/skeletons.dart';
 import 'package:tennisfy/helpers/services/firebase_getters.dart';
 import 'package:tennisfy/pages/profile_page.dart';
 import '../helpers/auth.dart';

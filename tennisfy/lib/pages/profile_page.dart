@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tennisfy/components/others.dart';
 import 'package:tennisfy/components/stats_card.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/models/comment_model.dart';
+import 'package:tennisfy/pages/chat_page.dart';
 import 'package:tennisfy/pages/profile_edit_page.dart';
 import '../helpers/auth.dart';
 import '../helpers/helper_methods.dart';
@@ -237,19 +236,26 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     SizedBox(height: displayHeight(context) * 0.008),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment:
+                          widget.userUID != Auth().currentUser!.uid
+                              ? MainAxisAlignment.spaceBetween
+                              : MainAxisAlignment.center,
                       children: [
                         Container(
                           height: displayHeight(context) * 0.05,
-                          width: displayWidth(context) * 0.9,
+                          width: widget.userUID != Auth().currentUser!.uid
+                              ? displayWidth(context) * 0.6
+                              : displayWidth(context) * 0.9,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.secondary,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: TextButton(
                               onPressed: () {
-                                widget.userUID == Auth().currentUser!.uid
-                                    ? goToPage(context, const ProfileEditPage())
+                                widget.userUID != Auth().currentUser!.uid
+                                    ? Navigator.push(context,
+                                            pageTransition(ProfileEditPage()))
+                                        .then((_) => setState(() {}))
                                     : {}; //challenge user;
                               },
                               child: Text(
@@ -261,7 +267,33 @@ class _ProfilePageState extends State<ProfilePage> {
                                     color:
                                         Theme.of(context).colorScheme.tertiary),
                               )),
-                        )
+                        ),
+                        Visibility(
+                            visible: widget.userUID != Auth().currentUser!.uid,
+                            child: Container(
+                                height: displayHeight(context) * 0.05,
+                                width: displayWidth(context) * 0.3,
+                                decoration: BoxDecoration(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: IconButton(
+                                  onPressed: () async {
+                                    goToPage(
+                                        context,
+                                        ChatPage(
+                                          userUID: widget.userUID,
+                                          chatID: await getOrCreateChatId(
+                                              widget.userUID),
+                                        ));
+                                  },
+                                  icon: Icon(
+                                    Icons.message,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                  ),
+                                ))),
                       ],
                     ),
                     //are sized boxs needed here? or mainAxisAliment should be enough?

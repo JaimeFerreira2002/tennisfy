@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
                                 builder: (context,
                                     AsyncSnapshot<List<Game>> snapshot) {
                                   if (!snapshot.hasData) {
-                                    return CircularProgressIndicator();
+                                    return const CircularProgressIndicator();
                                   }
                                   return ListView.builder(
                                       itemCount: snapshot.data!.length,

@@ -356,7 +356,8 @@ class _TennisSetupState extends State<TennisSetup> {
         friendRequests: [],
         ELOHistory: [
           _newELO,
-        ]);
+        ],
+        chatsIds: []);
 
     //update firebase instace of this user
     final json = newUser.toJson();

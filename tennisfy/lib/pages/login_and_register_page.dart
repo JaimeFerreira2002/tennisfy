@@ -240,7 +240,8 @@ class _LoginAndRegisterPageState extends State<LoginAndRegisterPage> {
           dateJoined: DateTime.now(),
           comments: [],
           friendRequests: [],
-          ELOHistory: []);
+          ELOHistory: [],
+          chatsIds: []);
 
       await Auth().createUserWithEmailAndPassowrd(
         email: _emailController.text,

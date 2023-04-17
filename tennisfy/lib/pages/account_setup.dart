@@ -397,7 +397,8 @@ class _AccountSetupState extends State<AccountSetup> {
                                             dateJoined: DateTime.now(),
                                             comments: [],
                                             friendRequests: [],
-                                            ELOHistory: []),
+                                            ELOHistory: [],
+                                            chatsIds: []),
                                       ));
                                 }
                               },

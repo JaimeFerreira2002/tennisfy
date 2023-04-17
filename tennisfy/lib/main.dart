@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tennisfy/helpers/widget_tree.dart';
@@ -15,11 +16,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      //used to override bold text on iphone
-      builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(boldText: false),
-        child: child!,
-      ),
+      //used to override bold text on iphone, only run the mediaquery builder when in IOS,because when it runs in android, it lags a
+      builder: Platform.isIOS
+          ? (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(boldText: false),
+                child: child!,
+              )
+          : null,
       useInheritedMediaQuery: false,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -31,7 +34,8 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         appBarTheme: const AppBarTheme(
             elevation: 0,
-            toolbarHeight: 60,
+
+            toolbarHeight: 60, //chango to mediaQuery
             backgroundColor: Colors.white,
             titleTextStyle: TextStyle(
               fontSize: 16,

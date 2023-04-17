@@ -22,6 +22,7 @@ class UserData {
   List<String>
       friendRequests; //list with UID that sent this user a friend request
   List<int> ELOHistory;
+  List<String> chatsIds; //all of chats the user is participating
 
   UserData(
       {required this.UID,
@@ -40,7 +41,8 @@ class UserData {
       required this.dateJoined,
       required this.comments,
       required this.friendRequests,
-      required this.ELOHistory});
+      required this.ELOHistory,
+      required this.chatsIds});
 
   Map<String, dynamic> toJson() => {
         'UID': UID,
@@ -60,6 +62,7 @@ class UserData {
         'CommentsList': jsonEncode(comments),
         'FriendRequests': jsonEncode(friendRequests),
         'ELOHistory': jsonEncode(ELOHistory),
+        'ChatsIDsList': jsonEncode(chatsIds),
       };
 
   ///
@@ -71,6 +74,8 @@ class UserData {
     List<dynamic> friendsJsonList = jsonDecode(json['FriendsList']);
     List<dynamic> commentsJsonList = jsonDecode(json['CommentsList']);
     List<dynamic> friendRequestsJsonList = jsonDecode(json['FriendRequests']);
+    List<dynamic> ELOHistoryJsonList = jsonDecode(json['ELOHistory']);
+    List<dynamic> chatsIDsJsonList = jsonDecode(json['ChatsIDsList']);
 
     return UserData(
         UID: json['UID'],
@@ -89,6 +94,7 @@ class UserData {
         dateJoined: dateFromFirebase(json['DateJoined']),
         comments: commentsJsonList.cast<Comment>(),
         friendRequests: friendRequestsJsonList.cast<String>(),
-        ELOHistory: jsonDecode(json['ELOHistory']));
+        ELOHistory: ELOHistoryJsonList.cast<int>(),
+        chatsIds: chatsIDsJsonList.cast<String>());
   }
 }
