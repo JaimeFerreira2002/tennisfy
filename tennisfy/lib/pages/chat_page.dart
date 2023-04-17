@@ -141,12 +141,12 @@ class _ChatPageState extends State<ChatPage> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(4, 14, 4, 14),
+                padding: const EdgeInsets.fromLTRB(8, 16, 8, 40),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
-                      width: displayWidth(context) * 0.8,
+                      width: displayWidth(context) * 0.75,
                       decoration: BoxDecoration(
                         color: Theme.of(context)
                             .colorScheme
