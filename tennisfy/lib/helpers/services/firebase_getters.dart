@@ -304,10 +304,12 @@ Future<String> getOrCreateChatId(String otherUserUid) async {
 
   // Add the new chat ID to both  user's list of chats
   currentUserChatIdsList.add(newChatId);
-  await currentUserDocRef.update({'Chats': currentUserChatIdsList});
+  await currentUserDocRef
+      .update({'ChatsIDsList': jsonEncode(currentUserChatIdsList)});
 
   otherUserChatIdsList.add(newChatId);
-  await otherUserDocRef.update({'Chats': otherUserChatIdsList});
+  await otherUserDocRef
+      .update({'ChatsIDsList': jsonEncode(otherUserChatIdsList)});
 
   return newChatId;
 }
@@ -319,7 +321,7 @@ Stream<List<Message>> getMessagesStream(String chatID) {
   final chatDocRef = FirebaseFirestore.instance.collection('Chats').doc(chatID);
   return chatDocRef
       .collection('Messages')
-      .orderBy('TimeSent', descending: true)
+      .orderBy('TimeSent', descending: false)
       .snapshots()
       .map((querySnapshot) {
     final messages = querySnapshot.docs
