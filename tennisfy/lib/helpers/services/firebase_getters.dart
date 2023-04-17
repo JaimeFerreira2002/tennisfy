@@ -328,7 +328,12 @@ Stream<List<Message>> getMessagesStream(String chatID) {
         .map((doc) => Message.fromJson(doc.data()))
         .toList()
         .cast<Message>();
-    messages.sort((a, b) => a.timeSent.compareTo(b.timeSent));
+
+    messages
+        .sort((a, b) => b.timeSent.compareTo(a.timeSent)); // sort by timeSent
+    // messages.forEach((element) {
+    //   print(element.timeSent);
+    // });
     return messages;
   });
 }
@@ -347,6 +352,7 @@ Future sendMessage(String senderUID, String recieverUID, String messageContent,
       message: messageContent,
       isRead: false,
       timeSent: DateTime.now());
+
   messageCollection.add(_newMessage.toJson());
 }
 

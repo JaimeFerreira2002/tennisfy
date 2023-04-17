@@ -31,6 +31,7 @@ class Message {
 
 Map dateAndTimeToFirebase(DateTime date) {
   return {
+    'Second': date.second,
     'Minute': date.minute,
     'Hour': date.hour,
     'Day': date.day,
@@ -40,12 +41,13 @@ Map dateAndTimeToFirebase(DateTime date) {
 }
 
 DateTime dateAndTimeFromFirebase(Map<String, dynamic> encoded) {
+  var second = encoded['Second'];
   var minute = encoded['Minute'];
   var hour = encoded['Hour'];
   var day = encoded['Day'];
   var month = encoded['Month'];
   var year = encoded['Year'];
-  DateTime dateTime = DateTime(year, month, day, hour, minute);
+  DateTime dateTime = DateTime(year, month, day, hour, minute, second);
 
   return dateTime;
 }

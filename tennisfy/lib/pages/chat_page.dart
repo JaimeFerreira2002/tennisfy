@@ -277,7 +277,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Text(
             timeSent.day.toString() + " / " + timeSent.month.toString(),
-            style: TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12),
           ),
           Container(
             height: displayHeight(context) * 0.002,
@@ -289,20 +289,5 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
     );
-  }
-
-  Map<DateTime, List<Message>> groupMessagesByDay(List<Message> messages) {
-    return messages.groupBy((message) => message.timeSent);
-  }
-}
-
-extension GroupBy<T> on List<T> {
-  Map<K, List<T>> groupBy<K>(K Function(T) keySelector) {
-    final groups = <K, List<T>>{};
-    for (final element in this) {
-      final key = keySelector(element);
-      groups.putIfAbsent(key, () => []).add(element);
-    }
-    return groups;
   }
 }
