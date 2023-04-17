@@ -319,6 +319,7 @@ Future<String> getOrCreateChatId(String otherUserUid) async {
 ///
 Stream<List<Message>> getMessagesStream(String chatID) {
   final chatDocRef = FirebaseFirestore.instance.collection('Chats').doc(chatID);
+
   return chatDocRef
       .collection('Messages')
       .orderBy('TimeSent', descending: false)

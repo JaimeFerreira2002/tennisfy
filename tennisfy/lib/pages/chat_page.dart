@@ -72,16 +72,6 @@ class _ChatPageState extends State<ChatPage> {
             ),
           ),
         ),
-        bottom: PreferredSize(
-          child: Container(
-            color: Theme.of(context)
-                .colorScheme
-                .primary
-                .withOpacity(0.2), // choose your desired color
-            height: 1.5, // choose your desired height
-          ),
-          preferredSize: const Size.fromHeight(0.0),
-        ),
       ),
       body: GestureDetector(
         onTap: () {
@@ -99,6 +89,7 @@ class _ChatPageState extends State<ChatPage> {
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Message>> snapshot) {
                     if (!snapshot.hasData) {
+                      print(snapshot.data);
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
@@ -132,25 +123,11 @@ class _ChatPageState extends State<ChatPage> {
                         } else {
                           return _messageCard(context, message, _isOwnMessage);
                         }
-                        // final Message message = messagesList[index];
-                        // final Message6 nextMessage = messagesList[index + 1]??;
-                        // bool _isOwnMessage = Auth().currentUser!.uid ==
-                        //     message
-                        //         .senderUID; //to disntiguihs between our messages and the other users
-                        // return message.timeSent.day != nextMessage.timeSent.day
-                        //     ? Column(
-                        //         children: [
-                        //           _dayDivider(messagesList[index + 1].timeSent),
-                        //           _messageCard(context, message, _isOwnMessage),
-                        //         ],
-                        //       )
-                        //     : _messageCard(context, message, _isOwnMessage);
                       },
                     );
                   }),
             )),
             Container(
-              height: displayHeight(context) * 0.14,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.tertiary,
                 boxShadow: [
@@ -163,59 +140,65 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    height: displayHeight(context) * 0.06,
-                    width: displayWidth(context) * 0.8,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.05),
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    ),
-                    child: TextField(
-                      controller: _newMessageController,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(4, 14, 4, 14),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      width: displayWidth(context) * 0.8,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(0.05),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
                       ),
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(20),
-                        hintText: "Send a message !",
-                        hintStyle: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Color.fromARGB(255, 178, 178, 178)),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: displayHeight(context) * 0.06,
-                    width: displayWidth(context) * 0.14,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).colorScheme.secondary),
-                    child: IconButton(
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        sendMessage(Auth().currentUser!.uid, widget.userUID,
-                            _newMessageController.text, widget.chatID);
-                        _newMessageController.clear();
-                      },
-                      icon: Icon(
-                        Icons.send,
-                        color: Theme.of(context).colorScheme.tertiary,
+                      child: TextField(
+                        maxLines: null,
+                        maxLength: 300,
+                        controller: _newMessageController,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        decoration: const InputDecoration(
+                          counterText: "",
+                          contentPadding: EdgeInsets.all(20),
+                          hintText: "Send a message !",
+                          hintStyle: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Color.fromARGB(255, 178, 178, 178)),
+                          border: InputBorder.none,
+                        ),
                       ),
                     ),
-                  )
-                ],
+                    Container(
+                      height: displayHeight(context) * 0.06,
+                      width: displayWidth(context) * 0.14,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Theme.of(context).colorScheme.secondary),
+                      child: IconButton(
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          sendMessage(Auth().currentUser!.uid, widget.userUID,
+                              _newMessageController.text, widget.chatID);
+                          _newMessageController.clear();
+                        },
+                        icon: Icon(
+                          Icons.send,
+                          color: Theme.of(context).colorScheme.tertiary,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ],
@@ -263,8 +246,9 @@ class _ChatPageState extends State<ChatPage> {
         ));
   }
 
-  Container _dayDivider(DateTime timeSent) {
-    return Container(
+  Padding _dayDivider(DateTime timeSent) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(6, 10, 6, 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -277,7 +261,9 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Text(
             timeSent.day.toString() + " / " + timeSent.month.toString(),
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.6)),
           ),
           Container(
             height: displayHeight(context) * 0.002,
