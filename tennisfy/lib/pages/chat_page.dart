@@ -89,7 +89,6 @@ class _ChatPageState extends State<ChatPage> {
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Message>> snapshot) {
                     if (!snapshot.hasData) {
-                      print(snapshot.data);
                       return const Center(
                         child: CircularProgressIndicator(),
                       );

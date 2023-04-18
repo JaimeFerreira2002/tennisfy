@@ -257,6 +257,31 @@ Future<List<Comment>> getUserCommentsList(String userUID) async {
 }
 
 ///
+//////////////////////////////////////   Chat System   ////////////////////////////////////
+///
+
+Future<List<String>> getUserChatsIdsList(String userUID) async {
+  final DocumentSnapshot userDoc =
+      await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
+  print(jsonDecode(userDoc.get('ChatsIDsList')));
+  return (jsonDecode(userDoc.get('ChatsIDsList')) as List).cast<String>();
+}
+
+///
+///Retrieve the other user UID
+///
+Future<String> getOtherChatUserUID(String chatID) async {
+  final DocumentSnapshot chatDoc =
+      await FirebaseFirestore.instance.collection('Chats').doc(chatID).get();
+  String user1Id = chatDoc.get('User1');
+  String user2Id = chatDoc.get('User2');
+  if (user1Id == Auth().currentUser!.uid) {
+    return user2Id;
+  } else
+    return user1Id;
+}
+
+///
 ///
 ///
 ///
@@ -297,6 +322,7 @@ Future<String> getOrCreateChatId(String otherUserUid) async {
   final newChatDocRef = chatsCollectionRef.doc();
   final newChatId = newChatDocRef.id;
 
+  //user1 and user2 are UIDs
   await newChatDocRef.set({
     'User1': currentUserUid,
     'User2': otherUserUid,
@@ -332,11 +358,21 @@ Stream<List<Message>> getMessagesStream(String chatID) {
 
     messages
         .sort((a, b) => b.timeSent.compareTo(a.timeSent)); // sort by timeSent
-    // messages.forEach((element) {
-    //   print(element.timeSent);
-    // });
+
     return messages;
   });
+}
+
+///
+///Retrives a stream of all chats a user is participating in
+///
+Stream<List<String>> getChatsStream(List<String> docIDs) {
+  return FirebaseFirestore.instance
+      .collection('Chats')
+      .where(FieldPath.documentId, whereIn: docIDs)
+      .snapshots()
+      .map((QuerySnapshot snapshot) =>
+          snapshot.docs.map((doc) => doc.id).toList());
 }
 
 ///

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tennisfy/helpers/auth.dart';
+import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
+import 'package:tennisfy/helpers/services/firebase_getters.dart';
+import 'package:tennisfy/pages/chat_page.dart';
 
 class InboxPage extends StatefulWidget {
   const InboxPage({Key? key}) : super(key: key);
@@ -65,10 +69,58 @@ class _InboxPageState extends State<InboxPage> {
                                 : FontWeight.w600)))
               ],
             ),
-            // Container(
-            //   height: displayHeight(context) * 0.4,
-            //   child: ListView.builder(itemBuilder: ),
-            // )
+            isMessagePage
+                ? Container(
+                    height: displayHeight(context) * 0.4,
+                    child: FutureBuilder(
+                      future: getUserChatsIdsList(Auth().currentUser!.uid),
+                      builder:
+                          (context, AsyncSnapshot<List<String>> listSnapshot) {
+                        if (listSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        return StreamBuilder<List<String>>(
+                          stream: getChatsStream(listSnapshot.data!),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List<String>> snapshot) {
+                            //when to use this vs ConnectionState.waiting
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            final List<String> chatIds = snapshot.data!;
+                            return ListView.builder(
+                              itemCount: chatIds.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final chatId = chatIds[index];
+                                return FutureBuilder(
+                                  future: getOtherChatUserUID(chatId),
+                                  builder: (context,
+                                      AsyncSnapshot<String> userUIDSnapshot) {
+                                    return ListTile(
+                                      title: Text(chatId),
+                                      onTap: () {
+                                        goToPage(
+                                            context,
+                                            ChatPage(
+                                                userUID: userUIDSnapshot.data!,
+                                                chatID: chatId));
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  )
+                : Container()
           ],
         ),
       ),

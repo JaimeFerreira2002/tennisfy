@@ -34,7 +34,6 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Poppins',
         appBarTheme: const AppBarTheme(
             elevation: 0,
-
             toolbarHeight: 60, //chango to mediaQuery
             backgroundColor: Colors.white,
             titleTextStyle: TextStyle(
