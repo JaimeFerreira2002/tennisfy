@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:geodesy/geodesy.dart';
 
 import '../../models/comment_model.dart';
 import '../../models/game_model.dart';
@@ -28,10 +29,6 @@ class FirebaseUsers {
   }
 
   Stream<UserData?> getUserDataStream(String userUID) {
-    // //this is needed bcause of the provider also being called in the login page
-    // if (userUID == null) {
-    //   return Stream.value(null);
-    // }
     final userDoc = FirebaseFirestore.instance.collection('Users').doc(userUID);
 
     return userDoc
@@ -47,6 +44,12 @@ class FirebaseUsers {
 
     return imageURL;
   }
+
+//  Stream<QuerySnapshot> getAllUsersPerDistanceStream(
+//   GeoPoint currentUserLocationGeoPoint,
+// ) async* {
+
+// }
 
   Future<int> getUserELOTopPercentage(String userUID) async {
     List<int> allUsersELOList = [];

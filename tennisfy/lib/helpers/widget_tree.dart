@@ -28,6 +28,7 @@ class _WidgetTreeState extends State<WidgetTree> {
                 initialData: null,
               ),
             ],
+            //change this to remove future builer, use provider
             child: FutureBuilder(
               future: FirebaseUsers()
                   .getUserHasSetupAccount(Auth().currentUser!.uid),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tennisfy/models/comment_model.dart';
 import '../helpers/helper_methods.dart';
 import 'game_model.dart';
@@ -11,6 +12,8 @@ class UserData {
   DateTime dateOfBirth;
   String sex;
   String bio;
+  GeoPoint
+      location; //location set by the user when setting up the account, could change later
   int ELO;
   bool hasSetupAccount;
   List<Game> gamesPlayed;
@@ -32,6 +35,7 @@ class UserData {
       required this.dateOfBirth,
       required this.sex,
       required this.bio,
+      required this.location,
       required this.ELO,
       required this.hasSetupAccount,
       required this.gamesPlayed,
@@ -52,6 +56,7 @@ class UserData {
         'DateOfBirth': dateToFirebase(dateOfBirth),
         'Sex': sex,
         'Biography': bio,
+        'Location': _geoPointToFirebase(location),
         'ELO': ELO,
         'HasSetupAccount': hasSetupAccount,
         'GamesPlayed': jsonEncode(gamesPlayed),
@@ -78,29 +83,53 @@ class UserData {
     List<dynamic> chatsIDsJsonList = jsonDecode(json['ChatsIDsList']);
 
     return UserData(
-        UID: json['UID'],
-        email: json['Email'],
-        firstName: json['FirstName'],
-        lastName: json['LastName'],
-        dateOfBirth: dateFromFirebase(json['DateOfBirth']),
-        sex: json['Sex'],
-        ELO: json['ELO'],
-        bio: json['Biography'],
-        hasSetupAccount: json['HasSetupAccount'],
-        gamesPlayed: gamesPlayedJsonList
-            .map((gameJson) => Game.fromJson(gameJson))
-            .toList()
-            .cast<Game>(),
-        friendsList: friendsJsonList.cast<String>(),
-        nextGamesList: nextGamesJsonList.cast<String>(),
-        reputation: json['Reputation'],
-        dateJoined: dateFromFirebase(json['DateJoined']),
-        comments: commentsJsonList
-            .map((commentJson) => Comment.fromJson(commentJson))
-            .toList()
-            .cast<Comment>(),
-        friendRequests: friendRequestsJsonList.cast<String>(),
-        ELOHistory: ELOHistoryJsonList.cast<int>(),
-        chatsIds: chatsIDsJsonList.cast<String>());
+      UID: json['UID'],
+      email: json['Email'],
+      firstName: json['FirstName'],
+      lastName: json['LastName'],
+      dateOfBirth: dateFromFirebase(json['DateOfBirth']),
+      sex: json['Sex'],
+      ELO: json['ELO'],
+      bio: json['Biography'],
+      location: _geoPointFromFirebase(json['Location']),
+      hasSetupAccount: json['HasSetupAccount'],
+      gamesPlayed: gamesPlayedJsonList
+          .map((gameJson) => Game.fromJson(gameJson))
+          .toList()
+          .cast<Game>(),
+      friendsList: friendsJsonList.cast<String>(),
+      nextGamesList: nextGamesJsonList.cast<String>(),
+      reputation: json['Reputation'],
+      dateJoined: dateFromFirebase(json['DateJoined']),
+      comments: commentsJsonList
+          .map((commentJson) => Comment.fromJson(commentJson))
+          .toList()
+          .cast<Comment>(),
+      friendRequests: friendRequestsJsonList.cast<String>(),
+      ELOHistory: ELOHistoryJsonList.cast<int>(),
+      chatsIds: chatsIDsJsonList.cast<String>(),
+    );
   }
+}
+
+///
+///Function to encode a geoPoint objet into a Map
+///
+Map _geoPointToFirebase(GeoPoint location) {
+  return {
+    'Latitude': location.latitude,
+    'Longitude': location.longitude,
+  };
+}
+
+///
+///Function to decode a map into a GeoPoint object
+///
+GeoPoint _geoPointFromFirebase(Map<String, dynamic> encoded) {
+  var latitude = encoded['Latitude'];
+  var longitude = encoded['Longitude'];
+
+  GeoPoint geoPoint = GeoPoint(latitude, longitude);
+
+  return geoPoint;
 }

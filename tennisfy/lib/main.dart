@@ -1,14 +1,7 @@
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:tennisfy/helpers/services/firebase_chats.dart';
-
 import 'package:tennisfy/helpers/widget_tree.dart';
-
-import 'helpers/services/auth.dart';
-import 'helpers/services/firebase_users.dart';
-import 'models/user_model.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();

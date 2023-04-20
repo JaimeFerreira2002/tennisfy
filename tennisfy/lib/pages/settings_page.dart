@@ -72,6 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 TextButton(
                     onPressed: () {
                       Auth().signOut();
+                      Navigator.pop(context);
                     },
                     child: const Text(
                       "Sign out",

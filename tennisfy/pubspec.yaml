@@ -48,6 +48,8 @@ dependencies:
   age_calculator: ^1.0.0
   skeletons: ^0.0.3
   provider: ^6.0.5
+  geolocator: ^9.0.2
+  geodesy: ^0.3.2
   
 
 

@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tennisfy/helpers/services/auth.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
@@ -27,6 +29,7 @@ class _AccountSetupState extends State<AccountSetup> {
   DateTime datePicked = DateTime.now();
   bool sexSelected = true;
   String _errorMessage = "";
+  Position? _currentPosition;
 
   @override
   Widget build(BuildContext context) {
@@ -364,12 +367,14 @@ class _AccountSetupState extends State<AccountSetup> {
                                 const BorderRadius.all(Radius.circular(10)),
                           ),
                           child: TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (!_advancePageCheck()) {
                                   setState(() {
                                     _errorMessage = "Missing information";
                                   });
                                 } else {
+                                  await _getCurrentPosition();
+
                                   setState(() {
                                     _errorMessage = "";
                                   });
@@ -379,26 +384,28 @@ class _AccountSetupState extends State<AccountSetup> {
                                       TennisSetup(
                                         profileImage: profileImage,
                                         currentUserData: UserData(
-                                            UID: Auth().currentUser!.uid,
-                                            email: Auth().currentUser!.email!,
-                                            firstName:
-                                                _firstNameController.text,
-                                            lastName: _lastNameController.text,
-                                            dateOfBirth: datePicked,
-                                            sex:
-                                                sexSelected ? "Male" : "Female",
-                                            bio: _bioController.text,
-                                            ELO: 0,
-                                            hasSetupAccount: false,
-                                            gamesPlayed: [],
-                                            friendsList: [],
-                                            nextGamesList: [],
-                                            reputation: 0,
-                                            dateJoined: DateTime.now(),
-                                            comments: [],
-                                            friendRequests: [],
-                                            ELOHistory: [],
-                                            chatsIds: []),
+                                          UID: Auth().currentUser!.uid,
+                                          email: Auth().currentUser!.email!,
+                                          firstName: _firstNameController.text,
+                                          lastName: _lastNameController.text,
+                                          dateOfBirth: datePicked,
+                                          sex: sexSelected ? "Male" : "Female",
+                                          bio: _bioController.text,
+                                          location: GeoPoint(
+                                              _currentPosition!.latitude,
+                                              _currentPosition!.longitude),
+                                          ELO: 0,
+                                          hasSetupAccount: false,
+                                          gamesPlayed: [],
+                                          friendsList: [],
+                                          nextGamesList: [],
+                                          reputation: 0,
+                                          dateJoined: DateTime.now(),
+                                          comments: [],
+                                          friendRequests: [],
+                                          ELOHistory: [],
+                                          chatsIds: [],
+                                        ),
                                       ));
                                 }
                               },
@@ -472,5 +479,48 @@ class _AccountSetupState extends State<AccountSetup> {
         _lastNameController.text.isNotEmpty &&
         _hasPickedDate &&
         _bioController.text.isNotEmpty;
+  }
+
+  Future<void> _getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      setState(() => _currentPosition = position);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  }
+
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Location services are disabled. Please enable the services')));
+      return false;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permissions are denied')));
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Location permissions are permanently denied, we cannot request permissions.')));
+      return false;
+    }
+    return true;
   }
 }

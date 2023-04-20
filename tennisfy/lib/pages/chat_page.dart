@@ -187,12 +187,14 @@ class _ChatPageState extends State<ChatPage> {
                           color: Theme.of(context).colorScheme.secondary),
                       child: IconButton(
                         onPressed: () {
-                          FirebaseChats().sendMessage(
-                              Auth().currentUser!.uid,
-                              widget.userUID,
-                              _newMessageController.text,
-                              widget.chatID);
-                          _newMessageController.clear();
+                          if (_newMessageController.text.isNotEmpty) {
+                            FirebaseChats().sendMessage(
+                                Auth().currentUser!.uid,
+                                widget.userUID,
+                                _newMessageController.text,
+                                widget.chatID);
+                            _newMessageController.clear();
+                          }
                         },
                         icon: Icon(
                           Icons.send,

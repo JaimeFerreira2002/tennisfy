@@ -338,26 +338,28 @@ class _TennisSetupState extends State<TennisSetup> {
         _answersSelected[2], _answersSelected[3]);
 //create updated userData
     UserData newUser = UserData(
-        UID: Auth().currentUser!.uid,
-        email: Auth().currentUser!.email!,
-        firstName: widget.currentUserData.firstName,
-        lastName: widget.currentUserData.lastName,
-        dateOfBirth: widget.currentUserData.dateOfBirth,
-        sex: widget.currentUserData.sex,
-        bio: widget.currentUserData.bio,
-        ELO: _newELO,
-        hasSetupAccount: true,
-        gamesPlayed: [],
-        friendsList: [],
-        nextGamesList: [],
-        reputation: 0.0,
-        dateJoined: DateTime.now(),
-        comments: [],
-        friendRequests: [],
-        ELOHistory: [
-          _newELO,
-        ],
-        chatsIds: []);
+      UID: Auth().currentUser!.uid,
+      email: Auth().currentUser!.email!,
+      firstName: widget.currentUserData.firstName,
+      lastName: widget.currentUserData.lastName,
+      dateOfBirth: widget.currentUserData.dateOfBirth,
+      sex: widget.currentUserData.sex,
+      bio: widget.currentUserData.bio,
+      location: widget.currentUserData.location,
+      ELO: _newELO,
+      hasSetupAccount: true,
+      gamesPlayed: [],
+      friendsList: [],
+      nextGamesList: [],
+      reputation: 0.0,
+      dateJoined: DateTime.now(),
+      comments: [],
+      friendRequests: [],
+      ELOHistory: [
+        _newELO,
+      ],
+      chatsIds: [],
+    );
 
     //update firebase instace of this user
     final json = newUser.toJson();
