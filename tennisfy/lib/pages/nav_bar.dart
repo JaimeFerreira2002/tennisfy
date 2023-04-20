@@ -19,7 +19,7 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: costunAppBar(context),
+        appBar: costumAppBar(context),
         bottomNavigationBar: Container(
           height: 90,
           child: GNav(

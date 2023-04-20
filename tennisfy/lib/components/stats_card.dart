@@ -1,25 +1,20 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tennisfy/components/others.dart';
+import 'package:tennisfy/models/user_model.dart';
 import '../helpers/media_query_helpers.dart';
 import '../models/game_model.dart';
 
-Container statsCard(BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-  List<ELOHistory> ELOHistoryList = _buildELOHistoryList(
-      snapshot.data.get('UID'),
-      (jsonDecode(snapshot.data.get('ELOHistory')) as List<dynamic>)
-          .cast<int>());
+Container statsCard(BuildContext context, UserData userData) {
+  List<ELOHistory> ELOHistoryList =
+      _buildELOHistoryList(userData.UID, userData.ELOHistory);
   //is this going to wrok when the game list isnt empty?
-  List<Game> gamesPlayed = jsonDecode(snapshot.data.get('GamesPlayed'))
-      .map((commentJson) => Game.fromJson(commentJson))
-      .toList()
-      .cast<Game>();
+  List<Game> gamesPlayed = userData.gamesPlayed;
 
   int _numberOfWins = 0;
   gamesPlayed.forEach(
     (element) {
-      if (element.winnerUID == snapshot.data.get('UID')) {
+      if (element.winnerUID == userData.UID) {
         _numberOfWins++;
       }
     },
@@ -80,7 +75,7 @@ Container statsCard(BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     style:
                         TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 Text(
-                  snapshot.data.get('ELO').toString(),
+                  userData.ELO.toString(),
                   style: const TextStyle(
                       fontWeight: FontWeight.w900, fontSize: 20),
                 ),

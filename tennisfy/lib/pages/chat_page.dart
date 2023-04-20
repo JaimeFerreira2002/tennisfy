@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:tennisfy/helpers/auth.dart';
+import 'package:tennisfy/helpers/services/auth.dart';
+import 'package:tennisfy/helpers/services/firebase_chats.dart';
 import 'package:tennisfy/models/message_model.dart';
 import 'package:tennisfy/pages/profile_page.dart';
 import '../helpers/helper_methods.dart';
 import '../helpers/media_query_helpers.dart';
-import '../helpers/services/firebase_getters.dart';
+import '../helpers/services/firebase_users.dart';
 
 class ChatPage extends StatefulWidget {
   String userUID; //uid of the user we are talking to
@@ -21,6 +22,7 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _newMessageController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    FirebaseChats().markAllAsRead(widget.chatID, Auth().currentUser!.uid);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -40,7 +42,7 @@ class _ChatPageState extends State<ChatPage> {
             child: Row(
               children: [
                 FutureBuilder(
-                  future: getProfileImageURL(widget.userUID),
+                  future: FirebaseUsers().getProfileImageURL(widget.userUID),
                   initialData: "Loading...",
                   builder: ((context, AsyncSnapshot<String> snapshot) {
                     return CircleAvatar(
@@ -57,7 +59,7 @@ class _ChatPageState extends State<ChatPage> {
                   width: displayWidth(context) * 0.04,
                 ),
                 FutureBuilder(
-                  future: getUserFullName(widget.userUID),
+                  future: FirebaseUsers().getUserFullName(widget.userUID),
                   initialData: "Loading...",
                   builder: ((context, AsyncSnapshot<String> snapshot) {
                     return Text(
@@ -85,7 +87,7 @@ class _ChatPageState extends State<ChatPage> {
             Expanded(
                 child: Container(
               child: StreamBuilder(
-                  stream: getMessagesStream(widget.chatID),
+                  stream: FirebaseChats().getMessagesStream(widget.chatID),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Message>> snapshot) {
                     if (!snapshot.hasData) {
@@ -185,9 +187,11 @@ class _ChatPageState extends State<ChatPage> {
                           color: Theme.of(context).colorScheme.secondary),
                       child: IconButton(
                         onPressed: () {
-                          FocusScope.of(context).unfocus();
-                          sendMessage(Auth().currentUser!.uid, widget.userUID,
-                              _newMessageController.text, widget.chatID);
+                          FirebaseChats().sendMessage(
+                              Auth().currentUser!.uid,
+                              widget.userUID,
+                              _newMessageController.text,
+                              widget.chatID);
                           _newMessageController.clear();
                         },
                         icon: Icon(

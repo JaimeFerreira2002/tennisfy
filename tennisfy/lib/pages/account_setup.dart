@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tennisfy/helpers/auth.dart';
+import 'package:tennisfy/helpers/services/auth.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/models/user_model.dart';
@@ -346,7 +346,7 @@ class _AccountSetupState extends State<AccountSetup> {
                       children: [
                         TextButton(
                             onPressed: () {
-                              signOut();
+                              Auth().signOut();
                             },
                             child: const Text(
                               "Sign out",

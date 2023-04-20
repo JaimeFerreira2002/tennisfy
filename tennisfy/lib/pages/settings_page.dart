@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tennisfy/helpers/auth.dart';
+import 'package:tennisfy/helpers/services/auth.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/pages/profile_page.dart';
@@ -71,7 +71,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 TextButton(
                     onPressed: () {
-                      signOut();
+                      Auth().signOut();
                     },
                     child: const Text(
                       "Sign out",

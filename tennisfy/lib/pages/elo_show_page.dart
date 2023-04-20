@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tennisfy/helpers/auth.dart';
+import 'package:tennisfy/helpers/services/auth.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
-import 'package:tennisfy/helpers/services/firebase_getters.dart';
+import 'package:tennisfy/helpers/services/firebase_users.dart';
 import 'package:tennisfy/pages/nav_bar.dart';
 
 class EloShowPage extends StatefulWidget {
@@ -51,7 +51,8 @@ class _EloShowPageState extends State<EloShowPage> {
               ),
               FutureBuilder(
                 initialData: 0,
-                future: getUserELOTopPercentage(Auth().currentUser!.uid),
+                future: FirebaseUsers()
+                    .getUserELOTopPercentage(Auth().currentUser!.uid),
                 builder: ((context, AsyncSnapshot<int> snapshot) {
                   return Text(
                     "This means you are in the top " +
@@ -73,7 +74,7 @@ class _EloShowPageState extends State<EloShowPage> {
                     Builder(builder: (context) {
                       return GestureDetector(
                         onTap: () {
-                          _InfoPopUps(context,
+                          _infoPopUps(context,
                               'By taking into account multiple factors that can impact a users performance, our algorithm provides a comprehensive and fair assessment of their abilities. Additionally, the use of capped maximum and minimum values ensures that the rating falls within a reasonable range, providing users with a clear understanding of their performance. ');
                         },
                         child: const Text(
@@ -85,7 +86,7 @@ class _EloShowPageState extends State<EloShowPage> {
                     }),
                     GestureDetector(
                       onTap: () {
-                        _InfoPopUps(context,
+                        _infoPopUps(context,
                             'Please note that your starting ELO cannot be changed at this time. However, we encourage you to add a warning to your profile description to let others know. Our matching algorithm is designed to naturally approach the "real" value of your skill level as you play against other users, so your ELO rating should become more accurate over time. Thank you for your understanding and we hope you enjoy the game!');
                       },
                       child: const Text(
@@ -130,7 +131,7 @@ class _EloShowPageState extends State<EloShowPage> {
     );
   }
 
-  void _InfoPopUps(BuildContext context, String text) {
+  void _infoPopUps(BuildContext context, String text) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -146,24 +147,27 @@ class _EloShowPageState extends State<EloShowPage> {
                       text,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     )),
-                SizedBox(height: displayHeight(context) * 0.02),
-                Container(
-                  width: displayWidth(context) * 0.9,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                Spacer(),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 30),
+                  child: Container(
+                    width: displayWidth(context) * 0.9,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                       ),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                    ),
-                    child: Text(
-                      'Got it !',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          fontSize: 20),
+                      child: Text(
+                        'Got it !',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            fontSize: 20),
+                      ),
                     ),
                   ),
                 )

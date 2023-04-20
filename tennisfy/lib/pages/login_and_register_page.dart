@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tennisfy/components/costum_text_field.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/models/user_model.dart';
-import '../helpers/auth.dart';
+import '../helpers/services/auth.dart';
 import 'package:email_validator/email_validator.dart';
 
 class LoginAndRegisterPage extends StatefulWidget {

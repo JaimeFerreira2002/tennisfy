@@ -1,7 +1,14 @@
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tennisfy/helpers/services/firebase_chats.dart';
+
 import 'package:tennisfy/helpers/widget_tree.dart';
+
+import 'helpers/services/auth.dart';
+import 'helpers/services/firebase_users.dart';
+import 'models/user_model.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,8 +23,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      //used to override bold text on iphone, only run the mediaquery builder when in IOS,because when it runs in android, it lags a
       builder: Platform.isIOS
+          //used to override bold text on iphone, only run the mediaquery builder when in IOS,because when it runs in android, it lags a
           ? (context, child) => MediaQuery(
                 data: MediaQuery.of(context).copyWith(boldText: false),
                 child: child!,

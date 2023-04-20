@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:tennisfy/helpers/services/firebase_getters.dart';
+import 'package:provider/provider.dart';
+import 'package:skeletons/skeletons.dart';
+import 'package:tennisfy/components/profile_image_avatar.dart';
+import 'package:tennisfy/models/user_model.dart';
 import 'package:tennisfy/pages/profile_page.dart';
-import '../helpers/auth.dart';
+import '../helpers/services/auth.dart';
 import '../helpers/helper_methods.dart';
 import '../helpers/media_query_helpers.dart';
 import '../pages/settings_page.dart';
 
-AppBar costunAppBar(BuildContext context) {
+AppBar costumAppBar(
+  BuildContext context,
+) {
   return AppBar(
     title: Image.asset("assets/images/logo.png"),
     titleSpacing: 0,
@@ -21,49 +26,38 @@ AppBar costunAppBar(BuildContext context) {
       preferredSize: const Size.fromHeight(0.0),
     ),
     actions: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
-        child: GestureDetector(
-          onTap: () {
-            goToPage(context, ProfilePage(userUID: Auth().currentUser!.uid));
-          },
-          child: Row(
-            children: [
-              FutureBuilder(
-                future: getProfileImageURL(Auth().currentUser!.uid),
-                initialData: "Loading...",
-                builder: ((context, AsyncSnapshot<String> snapshot) {
-                  return CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      backgroundImage: snapshot.data != null
-                          ? Image.network(snapshot.data!).image
-                          : Image.network(
-                                  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-                              .image);
-                }),
-              ),
-              SizedBox(
-                width: displayWidth(context) * 0.02,
-              ),
-              FutureBuilder(
-                future: getUserFullName(Auth().currentUser!.uid),
-                initialData: "Loading...",
-                builder: ((context, AsyncSnapshot<String> snapshot) {
-                  return Text(
-                    snapshot.data!,
+      Consumer<UserData?>(
+        builder: (BuildContext context, userData, Widget? child) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
+            child: GestureDetector(
+              onTap: () {
+                goToPage(
+                    context, ProfilePage(userUID: Auth().currentUser!.uid));
+              },
+              child: Row(
+                children: [
+                  ProfileImageAvatar(
+                      userUID: Auth().currentUserUID, radius: 18),
+                  SizedBox(
+                    width: displayWidth(context) * 0.02,
+                  ),
+                  userData == null
+                      ? const SkeletonLine()
+                      : Text(
+                          userData.firstName + " " + userData.lastName,
 
-                    //here we need a costum text style, non of the establushed fits good
-                  );
-                }),
+                          //here we need a costum text style, non of the establushed fits good
+                        )
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
       IconButton(
           onPressed: () {
-            goToPage(context, SettingsPage());
+            goToPage(context, const SettingsPage());
           },
           icon: Icon(
             Icons.settings_rounded,

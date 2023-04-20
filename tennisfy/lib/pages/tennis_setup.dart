@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/pages/elo_show_page.dart';
-import '../helpers/auth.dart';
+import '../helpers/services/auth.dart';
 import '../models/user_model.dart';
 
 class TennisSetup extends StatefulWidget {

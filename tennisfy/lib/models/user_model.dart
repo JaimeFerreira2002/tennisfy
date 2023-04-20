@@ -87,12 +87,18 @@ class UserData {
         ELO: json['ELO'],
         bio: json['Biography'],
         hasSetupAccount: json['HasSetupAccount'],
-        gamesPlayed: gamesPlayedJsonList.cast<Game>(),
+        gamesPlayed: gamesPlayedJsonList
+            .map((gameJson) => Game.fromJson(gameJson))
+            .toList()
+            .cast<Game>(),
         friendsList: friendsJsonList.cast<String>(),
         nextGamesList: nextGamesJsonList.cast<String>(),
         reputation: json['Reputation'],
         dateJoined: dateFromFirebase(json['DateJoined']),
-        comments: commentsJsonList.cast<Comment>(),
+        comments: commentsJsonList
+            .map((commentJson) => Comment.fromJson(commentJson))
+            .toList()
+            .cast<Comment>(),
         friendRequests: friendRequestsJsonList.cast<String>(),
         ELOHistory: ELOHistoryJsonList.cast<int>(),
         chatsIds: chatsIDsJsonList.cast<String>());

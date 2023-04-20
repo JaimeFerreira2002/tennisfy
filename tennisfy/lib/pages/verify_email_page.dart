@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../helpers/auth.dart';
+import '../helpers/services/auth.dart';
 import 'account_setup.dart';
 
 class VerifyEmailPage extends StatefulWidget {
@@ -71,7 +71,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        signOut();
+                        Auth().signOut();
                       },
                       child: Text(
                         "Sign Out",

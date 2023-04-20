@@ -4,10 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tennisfy/helpers/auth.dart';
+import 'package:provider/provider.dart';
+import 'package:tennisfy/helpers/services/auth.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
+import 'package:tennisfy/models/user_model.dart';
 
-import '../helpers/services/firebase_getters.dart';
+import '../helpers/services/firebase_users.dart';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({Key? key}) : super(key: key);
@@ -23,94 +25,93 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   File profilePickedImage = File('assets/images/Empty_Profile_Image.png');
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Edit profile",
-            style: TextStyle(fontSize: 20),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(
-                Icons.arrow_back,
-                color: Theme.of(context).colorScheme.primary,
-              )),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+    return Consumer<UserData>(
+      builder: (context, userData, Widget? child) {
+        return GestureDetector(
+          onTap: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.unfocus();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text(
+                "Edit profile",
+                style: TextStyle(fontSize: 20),
+              ),
+              centerTitle: true,
+              leading: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Theme.of(context).colorScheme.primary,
+                  )),
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    !hasPickedProfileImage
-                        ? FutureBuilder(
-                            future: getProfileImageURL(Auth().currentUser!.uid),
-                            initialData: "Loading...",
-                            builder:
-                                ((context, AsyncSnapshot<String> snapshot) {
-                              return CircleAvatar(
-                                  radius: 65,
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.primary,
-                                  backgroundImage: snapshot.data != null
-                                      ? Image.network(snapshot.data!).image
-                                      : Image.network(
-                                              "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-                                          .image);
-                            }),
-                          )
-                        : CircleAvatar(
-                            radius: 65,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            backgroundImage: FileImage(profilePickedImage),
-                          ),
-                    Container(
-                      width: displayWidth(context) * 0.5,
-                      height: displayHeight(context) * 0.05,
-                      child: TextButton(
-                          style: TextButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(13),
-                            ),
-                          ),
-                          onPressed: () {
-                            pickProfileImage();
-                          },
-                          child: Text(
-                            "Change profile image",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                color: Theme.of(context).colorScheme.tertiary),
-                          )),
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    FutureBuilder(
-                      future: getUserFirstName(Auth().currentUser!.uid),
-                      initialData: "Loading",
-                      builder: ((BuildContext context,
-                          AsyncSnapshot<String> snapshot) {
-                        return Container(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        !hasPickedProfileImage
+                            ? FutureBuilder(
+                                future: FirebaseUsers().getProfileImageURL(
+                                    Auth().currentUser!.uid),
+                                initialData: "Loading...",
+                                builder:
+                                    ((context, AsyncSnapshot<String> snapshot) {
+                                  return CircleAvatar(
+                                      radius: 65,
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      backgroundImage: snapshot.data != null
+                                          ? Image.network(snapshot.data!).image
+                                          : Image.network(
+                                                  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+                                              .image);
+                                }),
+                              )
+                            : CircleAvatar(
+                                radius: 65,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                backgroundImage: FileImage(profilePickedImage),
+                              ),
+                        Container(
+                          width: displayWidth(context) * 0.5,
+                          height: displayHeight(context) * 0.05,
+                          child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.secondary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                              ),
+                              onPressed: () {
+                                pickProfileImage();
+                              },
+                              child: Text(
+                                "Change profile image",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
+                              )),
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
                           height: displayHeight(context) * 0.074,
                           width: displayWidth(context) * 0.45,
                           decoration: BoxDecoration(
@@ -137,7 +138,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             ),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(20),
-                              hintText: snapshot.data!,
+                              hintText: userData.firstName,
                               hintStyle: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.bold,
@@ -146,15 +147,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                               border: InputBorder.none,
                             ),
                           ),
-                        );
-                      }),
-                    ),
-                    FutureBuilder(
-                      future: getUserLastName(Auth().currentUser!.uid),
-                      initialData: "Loading",
-                      builder: ((BuildContext context,
-                          AsyncSnapshot<String> snapshot) {
-                        return Container(
+                        ),
+                        Container(
                           height: displayHeight(context) * 0.074,
                           width: displayWidth(context) * 0.45,
                           decoration: BoxDecoration(
@@ -181,7 +175,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             ),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(20),
-                              hintText: snapshot.data!,
+                              hintText: userData.lastName,
                               hintStyle: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.bold,
@@ -190,40 +184,40 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                               border: InputBorder.none,
                             ),
                           ),
-                        );
-                      }),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 300),
+                    Container(
+                      width: displayWidth(context) * 0.9,
+                      height: displayHeight(context) * 0.06,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                          ),
+                          onPressed: () {
+                            updateProfile(_newFirstNameController.text,
+                                _newLastNameController.text);
+                            _uploadImage();
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            "Save",
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary),
+                          )),
                     )
                   ],
                 ),
-                SizedBox(height: 300),
-                Container(
-                  width: displayWidth(context) * 0.9,
-                  height: displayHeight(context) * 0.06,
-                  child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(13),
-                        ),
-                      ),
-                      onPressed: () {
-                        updateProfile(_newFirstNameController.text,
-                            _newLastNameController.text);
-                        _uploadImage();
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "Save",
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.tertiary),
-                      )),
-                )
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
