@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tennisfy/helpers/services/auth.dart';
 import 'package:tennisfy/helpers/services/firebase_chats.dart';
 import 'package:tennisfy/models/message_model.dart';
@@ -6,6 +7,7 @@ import 'package:tennisfy/pages/profile_page.dart';
 import '../helpers/helper_methods.dart';
 import '../helpers/media_query_helpers.dart';
 import '../helpers/services/firebase_users.dart';
+import '../models/user_model.dart';
 
 class ChatPage extends StatefulWidget {
   String userUID; //uid of the user we are talking to
@@ -37,7 +39,11 @@ class _ChatPageState extends State<ChatPage> {
           padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
           child: GestureDetector(
             onTap: () {
-              goToPage(context, ProfilePage(userUID: widget.userUID));
+              goToPage(
+                  context,
+                  ProfilePage(
+                    userData: Provider.of<UserData?>(context),
+                  ));
             },
             child: Row(
               children: [

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 import '../helpers/services/firebase_users.dart';
 
+///
+///This is used for every profile image avatar that is not the current users
+///
 class ProfileImageAvatar extends StatefulWidget {
   String userUID;
   double radius;
@@ -23,7 +26,7 @@ class _ProfileImageAvatarState extends State<ProfileImageAvatar> {
             style: SkeletonAvatarStyle(
                 width: widget.radius * 2,
                 height: widget.radius * 2,
-                borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(30)),
           );
         }
         return CircleAvatar(

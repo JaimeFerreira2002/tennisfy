@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tennisfy/helpers/services/auth.dart';
 import 'package:tennisfy/helpers/helper_methods.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
+import 'package:tennisfy/models/user_model.dart';
 import 'package:tennisfy/pages/profile_page.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  UserData? currentUserData;
+  SettingsPage({Key? key, required this.currentUserData}) : super(key: key);
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -14,6 +17,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
+    UserData? currentUserData = widget.currentUserData;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -44,21 +48,26 @@ class _SettingsPageState extends State<SettingsPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(height: displayHeight(context) * 0.04),
-          _settings_tile(context, Icons.person, "Profile",
-              ProfilePage(userUID: Auth().currentUser!.uid)),
+          _settings_tile(
+              context,
+              Icons.person,
+              "Profile",
+              ProfilePage(
+                userData: currentUserData,
+              )),
           _settings_tile(
               context,
               Icons.settings,
               "Preferences",
               ProfilePage(
-                userUID: Auth().currentUser!.uid,
+                userData: currentUserData,
               )),
           _settings_tile(
               context,
               Icons.info,
               "About us",
               ProfilePage(
-                userUID: Auth().currentUser!.uid,
+                userData: currentUserData,
               )),
           const Spacer(),
           Container(

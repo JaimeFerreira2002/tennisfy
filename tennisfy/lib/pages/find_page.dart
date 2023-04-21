@@ -22,6 +22,19 @@ class _FindPageState extends State<FindPage> {
   final String _filterMode = 'Near you';
   TextEditingController userSearchInputController = TextEditingController();
   double _radiusSelected = 10;
+  //filter modes
+  bool _distanceIsSelected = false;
+  bool _ELOIsSelected = false;
+  bool _gamesPlayedIsSelected = false;
+  bool _ageIsSelected = false;
+  //filter values, have to be doubles because of the rangeSlider, we the cast them to int
+  double _distanceSelected = 0;
+  double _minELOSelected = 0;
+  double _maxELOSelected = 200;
+  double _minGamesPlayedSelected = 0;
+  double _maxGamesPlayedSelected = 300;
+  double _maxAgeSelected = 80;
+  double _minAgeSelected = 18;
 
   @override
   Widget build(BuildContext context) {
@@ -33,18 +46,6 @@ class _FindPageState extends State<FindPage> {
               children: [
                 Container(
                   height: displayHeight(context) * 0.2,
-                  child: Slider(
-                    value: _radiusSelected,
-                    label: _radiusSelected.toString(),
-                    max: 500,
-                    min: 1,
-                    divisions: 100,
-                    onChanged: ((double value) {
-                      setState(() {
-                        _radiusSelected = value;
-                      });
-                    }),
-                  ),
                 ),
                 Padding(
                   //these indivdual paddings are necessary beacuse of the shadoes of the users list tiles
@@ -76,30 +77,7 @@ class _FindPageState extends State<FindPage> {
                       ),
                       IconButton(
                           onPressed: () {
-                            // showModalBottomSheet(
-                            //     context: context,
-                            //     builder: (BuildContext context) {
-                            //       return Column(
-                            //         children: [
-                            //           Text(_radiusSelected.toString()),
-                            //           Container(
-                            //             height: displayHeight(context) * 0.2,
-                            //             child: Slider(
-                            //               value: _radiusSelected,
-                            //               label: _radiusSelected.toString(),
-                            //               max: 500,
-                            //               min: 1,
-                            //               divisions: 100,
-                            //               onChanged: ((double value) {
-                            //                 setState(() {
-                            //                   _radiusSelected = value;
-                            //                 });
-                            //               }),
-                            //             ),
-                            //           ),
-                            //         ],
-                            //       );
-                            //     });
+                            _filtersPopUp(context);
                           },
                           icon: const Icon(Icons.filter_alt_outlined)),
                     ],
@@ -138,6 +116,231 @@ class _FindPageState extends State<FindPage> {
           ),
         );
       },
+    );
+  }
+
+  Future<dynamic> _filtersPopUp(BuildContext context) {
+    return showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _filtersSelectButton(context, setState,
+                            _distanceIsSelected, 1, "Distance"),
+                        _filtersSelectButton(
+                            context, setState, _ELOIsSelected, 2, "ELO"),
+                        _filtersSelectButton(
+                          context,
+                          setState,
+                          _gamesPlayedIsSelected,
+                          3,
+                          "Games played",
+                        ),
+                        _filtersSelectButton(
+                          context,
+                          setState,
+                          _ageIsSelected,
+                          4,
+                          "Age",
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: displayHeight(context) * 0.04),
+                    Column(children: [
+                      //here we repeat code beacuse o fthe exception cases where we need a range slider. But we can refactor later
+
+                      Visibility(
+                        visible: _distanceIsSelected,
+                        child: Column(children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Distance from you : " +
+                                _distanceSelected.toString() +
+                                " KM"),
+                          ),
+                          Slider(
+                            value: _distanceSelected,
+                            label: _distanceSelected.toString() + " Km",
+                            max: 500,
+                            min: 0,
+                            divisions: 10,
+                            onChanged: ((double value) {
+                              setState(() {
+                                _distanceSelected = value;
+                              });
+                            }),
+                          ),
+                        ]),
+                      ),
+
+                      Visibility(
+                        visible: _ELOIsSelected,
+                        child: Column(children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("ELO : " +
+                                _minELOSelected.toInt().toString() +
+                                " - " +
+                                _maxELOSelected.toInt().toString()),
+                          ),
+                          RangeSlider(
+                            min: 0,
+                            max: 200,
+                            values:
+                                RangeValues(_minELOSelected, _maxELOSelected),
+                            divisions: 200,
+                            onChanged: ((values) {
+                              setState(() {
+                                _minELOSelected = values.start;
+                                _maxELOSelected = values.end;
+                              });
+                            }),
+                          ),
+                        ]),
+                      ),
+
+                      Visibility(
+                        visible: _gamesPlayedIsSelected,
+                        child: Column(children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Games played : " +
+                                _minGamesPlayedSelected.toInt().toString() +
+                                " - " +
+                                _maxGamesPlayedSelected.toInt().toString()),
+                          ),
+                          RangeSlider(
+                            min: 0,
+                            max: 300,
+                            values: RangeValues(_minGamesPlayedSelected,
+                                _maxGamesPlayedSelected),
+                            divisions: 300,
+                            onChanged: ((values) {
+                              setState(() {
+                                _minGamesPlayedSelected = values.start;
+                                _maxGamesPlayedSelected = values.end;
+                              });
+                            }),
+                          ),
+                        ]),
+                      ),
+
+                      Visibility(
+                        visible: _ageIsSelected,
+                        child: Column(children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Age : " +
+                                _minAgeSelected.toInt().toString() +
+                                " - " +
+                                _maxAgeSelected.toInt().toString()),
+                          ),
+                          RangeSlider(
+                            min: 18,
+                            max: 80,
+                            values:
+                                RangeValues(_minAgeSelected, _maxAgeSelected),
+                            divisions: 62,
+                            onChanged: ((values) {
+                              setState(() {
+                                _minAgeSelected = values.start;
+                                _maxAgeSelected = values.end;
+                              });
+                            }),
+                          ),
+                        ]),
+                      ),
+                    ]),
+                    Visibility(
+                        visible: _ELOIsSelected ||
+                            _ageIsSelected ||
+                            _distanceIsSelected ||
+                            _gamesPlayedIsSelected,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            //update Stream
+                          },
+                          style: TextButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary),
+                          child: Text(
+                            "Update",
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary),
+                          ),
+                        ))
+                  ],
+                ),
+              );
+            },
+          );
+        });
+  }
+
+  ///This is used to not repeat code in the filters tab
+  ///[modeToSelectRef] is to know which variable to change, using int instead of String because it is lighter
+  ///1 - Distance
+  ///2 - ELO
+  ///3 - Games played
+  ///4 - Age
+  ///we still use [modeToSelect] for rendering colors, not having to use multiple switch cases
+  ///[otherValue] is for cases where we have a range slider instead of a simple slider
+  ///
+  TextButton _filtersSelectButton(
+    BuildContext context,
+    StateSetter setState,
+    bool modeToSelect,
+    int modeToSelectRef,
+    String label,
+  ) {
+    return TextButton(
+      style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: modeToSelect
+              ? Theme.of(context).colorScheme.secondary
+              : Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+      onPressed: () {
+        setState(() {
+          switch (modeToSelectRef) {
+            case 1:
+              _distanceIsSelected = !_distanceIsSelected;
+              break;
+
+            case 2:
+              _ELOIsSelected = !_ELOIsSelected;
+              break;
+            case 3:
+              _gamesPlayedIsSelected = !_gamesPlayedIsSelected;
+              break;
+            case 4:
+              _ageIsSelected = !_ageIsSelected;
+              break;
+            default:
+          }
+        });
+      },
+      child: Text(
+        label,
+        style: TextStyle(
+            fontSize: 14,
+            color: !modeToSelect
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
+                : Theme.of(context).colorScheme.tertiary),
+      ),
     );
   }
 
@@ -231,7 +434,11 @@ class _FindPageState extends State<FindPage> {
               contentPadding: const EdgeInsets.all(6),
               leading: ProfileImageAvatar(userUID: userData.UID, radius: 26),
               onTap: () {
-                goToPage(context, ProfilePage(userUID: userData.UID));
+                goToPage(
+                    context,
+                    ProfilePage(
+                      userData: userData,
+                    ));
               },
             ),
           ),
@@ -294,7 +501,11 @@ class _FindPageState extends State<FindPage> {
               }),
             ),
             onTap: () {
-              goToPage(context, ProfilePage(userUID: userData.UID));
+              goToPage(
+                  context,
+                  ProfilePage(
+                    userData: userData,
+                  ));
             },
           ),
         );

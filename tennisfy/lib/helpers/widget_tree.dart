@@ -48,6 +48,11 @@ class _WidgetTreeState extends State<WidgetTree> {
                           .getUserDataStream(Auth().currentUserUID),
                       initialData: null,
                     ),
+
+                    FutureProvider<String?>.value(
+                        value: FirebaseUsers()
+                            .getProfileImageURL(Auth().currentUserUID),
+                        initialData: null)
                   ], child: const NavBar());
                 } else {
                   return const VerifyEmailPage();

@@ -27,27 +27,36 @@ AppBar costumAppBar(
     ),
     actions: [
       Consumer<UserData?>(
-        builder: (BuildContext context, userData, Widget? child) {
+        builder: (BuildContext context, currentUserData, Widget? child) {
           return Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
             child: GestureDetector(
               onTap: () {
                 goToPage(
-                    context, ProfilePage(userUID: Auth().currentUser!.uid));
+                    context,
+                    ProfilePage(
+                      userData: currentUserData,
+                    ));
               },
               child: Row(
                 children: [
-                  ProfileImageAvatar(
-                      userUID: Auth().currentUserUID, radius: 18),
+                  CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundImage: Provider.of<String?>(context) != null
+                          ? Image.network(Provider.of<String?>(context)!).image
+                          : Image.network(
+                                  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+                              .image),
                   SizedBox(
                     width: displayWidth(context) * 0.02,
                   ),
-                  userData == null
+                  currentUserData == null
                       ? const SkeletonLine()
                       : Text(
-                          userData.firstName + " " + userData.lastName,
-
-                          //here we need a costum text style, non of the establushed fits good
+                          currentUserData.firstName +
+                              " " +
+                              currentUserData.lastName,
                         )
                 ],
               ),
@@ -57,7 +66,12 @@ AppBar costumAppBar(
       ),
       IconButton(
           onPressed: () {
-            goToPage(context, const SettingsPage());
+            goToPage(
+                context,
+                SettingsPage(
+                  currentUserData:
+                      Provider.of<UserData?>(context, listen: false),
+                )); //find a better solution here, hwat does listen do
           },
           icon: Icon(
             Icons.settings_rounded,
