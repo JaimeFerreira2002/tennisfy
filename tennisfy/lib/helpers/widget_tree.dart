@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tennisfy/helpers/services/firebase_users.dart';
@@ -20,42 +21,39 @@ class _WidgetTreeState extends State<WidgetTree> {
       stream: Auth().authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return MultiProvider(
-            providers: [
-              //userData
-              StreamProvider<UserData?>.value(
-                value: FirebaseUsers().getUserDataStream(Auth().currentUserUID),
-                initialData: null,
-              ),
-            ],
-            //change this to remove future builer, use provider
-            child: FutureBuilder(
-              future: FirebaseUsers()
-                  .getUserHasSetupAccount(Auth().currentUser!.uid),
-              builder: ((context, AsyncSnapshot<bool> userData) {
-                if (userData.connectionState == ConnectionState.waiting) {
-                  //loading page
-                  return Scaffold(
-                    body: Center(
-                      child: SizedBox(
-                        height: 320,
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          width: 300,
-                          height: 300,
-                        ),
+          return FutureBuilder(
+            future:
+                FirebaseUsers().getUserHasSetupAccount(Auth().currentUser!.uid),
+            builder: ((context, AsyncSnapshot<bool> userData) {
+              if (userData.connectionState == ConnectionState.waiting) {
+                //loading page
+                return Scaffold(
+                  body: Center(
+                    child: SizedBox(
+                      height: 320,
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 300,
+                        height: 300,
                       ),
                     ),
-                  );
+                  ),
+                );
+              } else {
+                if (userData.data == true) {
+                  return MultiProvider(providers: [
+                    //userData
+                    StreamProvider<UserData?>.value(
+                      value: FirebaseUsers()
+                          .getUserDataStream(Auth().currentUserUID),
+                      initialData: null,
+                    ),
+                  ], child: const NavBar());
                 } else {
-                  if (userData.data == true) {
-                    return const NavBar();
-                  } else {
-                    return const VerifyEmailPage();
-                  }
+                  return const VerifyEmailPage();
                 }
-              }),
-            ),
+              }
+            }),
           );
         } else {
           return const LoginAndRegisterPage();

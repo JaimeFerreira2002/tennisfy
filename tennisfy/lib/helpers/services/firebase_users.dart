@@ -1,10 +1,9 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:geodesy/geodesy.dart';
-
 import '../../models/comment_model.dart';
 import '../../models/game_model.dart';
 import '../../models/user_model.dart';
@@ -45,11 +44,40 @@ class FirebaseUsers {
     return imageURL;
   }
 
-//  Stream<QuerySnapshot> getAllUsersPerDistanceStream(
-//   GeoPoint currentUserLocationGeoPoint,
-// ) async* {
+  ///
+  ///Simplify this function
+  ///
+  Stream<QuerySnapshot> getUsersOrderedByDistance(
+      GeoPoint currentUserLocation, double radiusInKm) {
+    // define constants for radius of the earth in km and the radius of the search area
+    const double EARTH_RADIUS = 6371.0;
+    double searchRadius = radiusInKm;
 
-// }
+    // convert search radius to radians
+    double searchRadiusInRadians = searchRadius / EARTH_RADIUS;
+
+    // get the coordinates of the user's location
+    double userLat = currentUserLocation.latitude;
+    double userLng = currentUserLocation.longitude;
+
+    // calculate the bounding coordinates of the search area
+    double minLat = userLat - searchRadiusInRadians;
+    double maxLat = userLat + searchRadiusInRadians;
+    double minLng = userLng - searchRadiusInRadians / cos(radians(userLat));
+    double maxLng = userLng + searchRadiusInRadians / cos(radians(userLat));
+
+    // create a query for all users within the search area
+    return FirebaseFirestore.instance
+        .collection('Users')
+        .where('Location', isGreaterThanOrEqualTo: GeoPoint(minLat, minLng))
+        .where('Location', isLessThanOrEqualTo: GeoPoint(maxLat, maxLng))
+        .snapshots();
+  }
+
+// helper function to convert degrees to radians
+  double radians(double degrees) {
+    return degrees * pi / 180.0;
+  }
 
   Future<int> getUserELOTopPercentage(String userUID) async {
     List<int> allUsersELOList = [];

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tennisfy/models/comment_model.dart';
 import '../helpers/helper_methods.dart';
@@ -56,7 +57,7 @@ class UserData {
         'DateOfBirth': dateToFirebase(dateOfBirth),
         'Sex': sex,
         'Biography': bio,
-        'Location': _geoPointToFirebase(location),
+        'Location': location,
         'ELO': ELO,
         'HasSetupAccount': hasSetupAccount,
         'GamesPlayed': jsonEncode(gamesPlayed),
@@ -91,7 +92,7 @@ class UserData {
       sex: json['Sex'],
       ELO: json['ELO'],
       bio: json['Biography'],
-      location: _geoPointFromFirebase(json['Location']),
+      location: json['Location'],
       hasSetupAccount: json['HasSetupAccount'],
       gamesPlayed: gamesPlayedJsonList
           .map((gameJson) => Game.fromJson(gameJson))
@@ -110,26 +111,4 @@ class UserData {
       chatsIds: chatsIDsJsonList.cast<String>(),
     );
   }
-}
-
-///
-///Function to encode a geoPoint objet into a Map
-///
-Map _geoPointToFirebase(GeoPoint location) {
-  return {
-    'Latitude': location.latitude,
-    'Longitude': location.longitude,
-  };
-}
-
-///
-///Function to decode a map into a GeoPoint object
-///
-GeoPoint _geoPointFromFirebase(Map<String, dynamic> encoded) {
-  var latitude = encoded['Latitude'];
-  var longitude = encoded['Longitude'];
-
-  GeoPoint geoPoint = GeoPoint(latitude, longitude);
-
-  return geoPoint;
 }

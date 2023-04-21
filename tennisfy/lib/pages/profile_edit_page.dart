@@ -25,7 +25,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   File profilePickedImage = File('assets/images/Empty_Profile_Image.png');
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserData>(
+    return Consumer<UserData?>(
       builder: (context, userData, Widget? child) {
         return GestureDetector(
           onTap: () {
@@ -138,7 +138,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             ),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(20),
-                              hintText: userData.firstName,
+                              hintText: userData == null
+                                  ? "loading"
+                                  : userData.firstName,
                               hintStyle: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.bold,
@@ -175,7 +177,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             ),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(20),
-                              hintText: userData.lastName,
+                              hintText: userData == null
+                                  ? "loading"
+                                  : userData.lastName,
                               hintStyle: const TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.bold,

@@ -5,7 +5,7 @@ import 'package:tennisfy/models/user_model.dart';
 import '../helpers/media_query_helpers.dart';
 import '../models/game_model.dart';
 
-Container statsCard(BuildContext context, UserData userData) {
+Widget statsCard(BuildContext context, UserData userData) {
   List<ELOHistory> ELOHistoryList =
       _buildELOHistoryList(userData.UID, userData.ELOHistory);
   //is this going to wrok when the game list isnt empty?

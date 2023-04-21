@@ -2,27 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 import '../helpers/services/firebase_users.dart';
 
-class ProfileImageAvatar extends StatelessWidget {
+class ProfileImageAvatar extends StatefulWidget {
   String userUID;
   double radius;
   ProfileImageAvatar({Key? key, required this.userUID, required this.radius})
       : super(key: key);
 
   @override
+  State<ProfileImageAvatar> createState() => _ProfileImageAvatarState();
+}
+
+class _ProfileImageAvatarState extends State<ProfileImageAvatar> {
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: FirebaseUsers().getProfileImageURL(userUID),
+      future: FirebaseUsers().getProfileImageURL(widget.userUID),
       builder: ((context, AsyncSnapshot<String> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return SkeletonAvatar(
             style: SkeletonAvatarStyle(
-                width: radius * 2,
-                height: radius * 2,
+                width: widget.radius * 2,
+                height: widget.radius * 2,
                 borderRadius: BorderRadius.circular(20)),
           );
         }
         return CircleAvatar(
-            radius: radius,
+            radius: widget.radius,
             backgroundColor: Theme.of(context).colorScheme.primary,
             backgroundImage: snapshot.data != null
                 ? Image.network(snapshot.data!).image

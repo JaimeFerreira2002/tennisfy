@@ -15,6 +15,7 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   int _bottomBarIndex = 0;
+  final PageController _pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,7 @@ class _NavBarState extends State<NavBar> {
             onTabChange: (index) {
               setState(() {
                 _bottomBarIndex = index;
+                _pageController.jumpToPage(index);
               });
             },
             color: const Color.fromARGB(255, 41, 41, 41),
@@ -74,17 +76,22 @@ class _NavBarState extends State<NavBar> {
           ),
         ),
         body: Center(
-          child: _pageSelected(_bottomBarIndex),
+          //is this page view approach good?
+
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _bottomBarIndex = index;
+              });
+            },
+            children: const <Widget>[
+              HomePage(),
+              FindPage(),
+              InboxPage(),
+              HistoryPage(),
+            ],
+          ),
         ));
   }
-}
-
-Widget _pageSelected(int index) {
-  List<Widget> _pagesList = [
-    const HomePage(),
-    const FindPage(),
-    const InboxPage(),
-    const HistoryPage()
-  ];
-  return _pagesList[index];
 }

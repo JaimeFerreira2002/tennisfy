@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    UserData? userData = Provider.of<UserData?>(context);
     return Scaffold(
       body: Consumer<UserData?>(builder: (context, userData, Widget? child) {
         return Padding(

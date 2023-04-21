@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tennisfy/components/profile_image_avatar.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/pages/profile_page.dart';
@@ -18,83 +19,125 @@ class FindPage extends StatefulWidget {
 
 class _FindPageState extends State<FindPage> {
   String userSearchInput = '';
-  String _filterMode = 'Near you';
-
+  final String _filterMode = 'Near you';
   TextEditingController userSearchInputController = TextEditingController();
+  double _radiusSelected = 10;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            Container(
-              height: displayHeight(context) * 0.2,
-            ),
-            Padding(
-              //these indivdual paddings are necessary beacuse of the shadoes of the users list tiles
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
+    return Consumer<UserData?>(
+      builder: (context, userData, child) {
+        return Scaffold(
+          body: Center(
+            child: Column(
+              children: [
+                Container(
+                  height: displayHeight(context) * 0.2,
+                  child: Slider(
+                    value: _radiusSelected,
+                    label: _radiusSelected.toString(),
+                    max: 500,
+                    min: 1,
+                    divisions: 100,
+                    onChanged: ((double value) {
+                      setState(() {
+                        _radiusSelected = value;
+                      });
+                    }),
+                  ),
+                ),
+                Padding(
+                  //these indivdual paddings are necessary beacuse of the shadoes of the users list tiles
+                  padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Find",
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w900),
+                      Row(
+                        children: [
+                          const Text(
+                            "Find",
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w900),
+                          ),
+                          SizedBox(
+                            width: displayWidth(context) * 0.06,
+                          ),
+                          Text(
+                            _filterMode,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.4)),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        width: displayWidth(context) * 0.06,
-                      ),
-                      Text(
-                        _filterMode,
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withOpacity(0.4)),
-                      ),
+                      IconButton(
+                          onPressed: () {
+                            // showModalBottomSheet(
+                            //     context: context,
+                            //     builder: (BuildContext context) {
+                            //       return Column(
+                            //         children: [
+                            //           Text(_radiusSelected.toString()),
+                            //           Container(
+                            //             height: displayHeight(context) * 0.2,
+                            //             child: Slider(
+                            //               value: _radiusSelected,
+                            //               label: _radiusSelected.toString(),
+                            //               max: 500,
+                            //               min: 1,
+                            //               divisions: 100,
+                            //               onChanged: ((double value) {
+                            //                 setState(() {
+                            //                   _radiusSelected = value;
+                            //                 });
+                            //               }),
+                            //             ),
+                            //           ),
+                            //         ],
+                            //       );
+                            //     });
+                          },
+                          icon: const Icon(Icons.filter_alt_outlined)),
                     ],
                   ),
-                  IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.filter_alt_outlined)),
-                ],
-              ),
-            ),
-            Padding(
-                padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
-                child: _userSearchBar(context)),
-            Expanded(
-              child: Container(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('Users')
-                      .snapshots(),
-                  builder: (context, snapshots) {
-                    if ((snapshots.connectionState ==
-                        ConnectionState.waiting)) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else {
-                      return ListView.builder(
-                          itemCount: snapshots.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            UserData userData = UserData.fromJson(
-                                snapshots.data!.docs[index].data()
-                                    as Map<String, dynamic>);
-
-                            return _buildListTile(userData, context);
-                          });
-                    }
-                  },
                 ),
-              ),
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
+                    child: _userSearchBar(context)),
+                Expanded(
+                  child: Container(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseUsers().getUsersOrderedByDistance(
+                          userData!.location, _radiusSelected),
+                      builder: (context, snapshots) {
+                        if ((snapshots.connectionState ==
+                            ConnectionState.waiting)) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else {
+                          return ListView.builder(
+                              itemCount: snapshots.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                UserData userData = UserData.fromJson(
+                                    snapshots.data!.docs[index].data()
+                                        as Map<String, dynamic>);
+
+                                return _buildListTile(userData, context);
+                              });
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
