@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class FirebaseUsers {
         as UserData;
   }
 
-  Stream<UserData?> getUserDataStream(String userUID) {
+  Stream<UserData> getUserDataStream(String userUID) {
     final userDoc = FirebaseFirestore.instance.collection('Users').doc(userUID);
 
     return userDoc
@@ -45,33 +46,116 @@ class FirebaseUsers {
   }
 
   ///
-  ///Simplify this function
+  ///Here we return a query (data request) beacuse it is simpler,a and all streams of the find page will return this
   ///
-  Stream<QuerySnapshot> getUsersOrderedByDistance(
-      GeoPoint currentUserLocation, double radiusInKm) {
-    // define constants for radius of the earth in km and the radius of the search area
-    const double EARTH_RADIUS = 6371.0;
-    double searchRadius = radiusInKm;
+  Stream<QuerySnapshot> allUsersStream() {
+    return usersRef.snapshots();
+  }
 
-    // convert search radius to radians
-    double searchRadiusInRadians = searchRadius / EARTH_RADIUS;
+  ///
+  ///Returns a list of <UserData> of all users in 'Users' collection
+  ///
+  Future<List<UserData>> allUsersList() async {
+    List<UserData> allUsers = [];
 
-    // get the coordinates of the user's location
-    double userLat = currentUserLocation.latitude;
-    double userLng = currentUserLocation.longitude;
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('Users').get();
+    for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+      UserData user =
+          UserData.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+      allUsers.add(user);
+    }
 
-    // calculate the bounding coordinates of the search area
-    double minLat = userLat - searchRadiusInRadians;
-    double maxLat = userLat + searchRadiusInRadians;
-    double minLng = userLng - searchRadiusInRadians / cos(radians(userLat));
-    double maxLng = userLng + searchRadiusInRadians / cos(radians(userLat));
+    return allUsers;
+  }
 
-    // create a query for all users within the search area
-    return FirebaseFirestore.instance
-        .collection('Users')
-        .where('Location', isGreaterThanOrEqualTo: GeoPoint(minLat, minLng))
-        .where('Location', isLessThanOrEqualTo: GeoPoint(maxLat, maxLng))
-        .snapshots();
+  ///
+  ///This is used in the simple version of the filter, that only orders users
+  ///
+  Stream<QuerySnapshot> orderedUsersStream(bool applyDistanceFilter,
+      bool applyEloFilter, bool applyGamesPlayedFilter, bool applyAgeFilter) {
+    Query query = FirebaseFirestore.instance.collection('Users');
+
+    if (applyDistanceFilter) {
+      query = query.orderBy('Location', descending: true);
+    }
+
+    if (applyEloFilter) {
+      query = query.orderBy('ELO', descending: true);
+    }
+
+    if (applyGamesPlayedFilter) {
+      //does this work? since games played is a json string
+      query = query.orderBy('GamesPlayed', descending: true);
+    }
+
+    if (applyAgeFilter) {
+      query = query.orderBy('DateOfBirth.Year', descending: false);
+    }
+
+    return query.snapshots();
+  }
+
+  ///
+  ///This is to be used when we implement the full filter system, as it is not working
+  ///
+  Stream<QuerySnapshot> updateFindStream(
+      bool filterByElo,
+      int minELO,
+      int maxELO,
+      bool filterByAge,
+      int minAge,
+      int maxAge,
+      bool filterByDistance,
+      double distance,
+      GeoPoint currentUserLocation,
+      bool filterByGamesPlayed,
+      int minGamesPlayed,
+      int maxGamesPlayed) {
+    // Initialize the query with the users collection reference
+    // Apply filters based on user selected values and boolean flags
+    Query usersQuery = usersRef;
+    if (filterByElo) {
+      usersQuery = usersQuery
+          .where('ELO', isGreaterThanOrEqualTo: minELO)
+          .where('ELO', isLessThanOrEqualTo: maxELO);
+    }
+    if (filterByAge) {
+      final dobMin = DateTime.now().subtract(Duration(days: minAge * 365));
+      final dobMax = DateTime.now().subtract(Duration(days: maxAge * 365));
+      usersQuery = usersQuery
+          .where('DateOfBirth', isGreaterThanOrEqualTo: dobMin)
+          .where('DateOfBirth', isLessThanOrEqualTo: dobMax);
+    }
+    if (filterByDistance) {
+      const double EARTH_RADIUS = 6371.0;
+      double searchRadius = distance;
+
+      // convert search radius to radians
+      double searchRadiusInRadians = searchRadius / EARTH_RADIUS;
+
+      // get the coordinates of the user's location
+      double userLat = currentUserLocation.latitude;
+      double userLng = currentUserLocation.longitude;
+
+      // calculate the bounding coordinates of the search area
+      double minLat = userLat - searchRadiusInRadians;
+      double maxLat = userLat + searchRadiusInRadians;
+      double minLng = userLng - searchRadiusInRadians / cos(radians(userLat));
+      double maxLng = userLng + searchRadiusInRadians / cos(radians(userLat));
+
+      // create a query for all users within the search area
+      usersQuery = usersQuery
+          .where('Location', isGreaterThanOrEqualTo: GeoPoint(minLat, minLng))
+          .where('Location', isLessThanOrEqualTo: GeoPoint(maxLat, maxLng));
+    }
+    if (filterByGamesPlayed) {
+      usersQuery = usersQuery
+          .where('GamesPlayed', isGreaterThanOrEqualTo: minGamesPlayed)
+          .where('GamesPlayed', isLessThanOrEqualTo: maxGamesPlayed);
+    }
+    // Return the filtered query as a stream of QuerySnapshots
+    return usersQuery.snapshots();
   }
 
 // helper function to convert degrees to radians
@@ -111,6 +195,45 @@ class FirebaseUsers {
         await FirebaseFirestore.instance.collection('Users').doc(userUID).get();
 
     return (jsonDecode(userDoc.get('ChatsIDsList')) as List).cast<String>();
+  }
+
+  ///
+  ///returns the best fitting adversarie for the current user
+  ///should userUID be a parameter, or are we just calling this to the current user?
+  ///the return type is nullable because it can be null in the case that the list is empty
+  ///
+  Future<UserData?> findBestFittingAdversary() async {
+    // Fetch the list of all users from the Firebase collection
+    List<UserData> allUsers = await allUsersList();
+    for (UserData user in allUsers) {
+      print(user.firstName);
+    }
+
+    // Set weight factors for each parameter
+    double wELO = 0.4;
+    double wGamesPlayed = 0.2;
+    double wReputation = 0.3;
+    double wAge = 0.1;
+
+    // Initialize variables to hold the best fitting adversary and its score
+    UserData? bestAdversary = null;
+    double bestScore = double.negativeInfinity;
+
+    // Calculate the score for each user and find the user with the highest score
+    for (UserData user in allUsers) {
+      double score = wELO * user.ELO +
+          wGamesPlayed * user.gamesPlayed.length +
+          wReputation * user.reputation +
+          wAge * AgeCalculator.age(user.dateOfBirth).years;
+
+      if (score > bestScore) {
+        bestAdversary = user;
+        bestScore = score;
+      }
+    }
+
+    // Return the best fitting adversary
+    return bestAdversary;
   }
 
   ///

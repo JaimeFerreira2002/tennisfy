@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,20 +23,14 @@ class _FindPageState extends State<FindPage> {
   String userSearchInput = '';
   final String _filterMode = 'Near you';
   TextEditingController userSearchInputController = TextEditingController();
-  double _radiusSelected = 10;
+
   //filter modes
   bool _distanceIsSelected = false;
   bool _ELOIsSelected = false;
   bool _gamesPlayedIsSelected = false;
   bool _ageIsSelected = false;
-  //filter values, have to be doubles because of the rangeSlider, we the cast them to int
-  double _distanceSelected = 0;
-  double _minELOSelected = 0;
-  double _maxELOSelected = 200;
-  double _minGamesPlayedSelected = 0;
-  double _maxGamesPlayedSelected = 300;
-  double _maxAgeSelected = 80;
-  double _minAgeSelected = 18;
+
+  bool _showRecommendedPlayer = true;
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +40,73 @@ class _FindPageState extends State<FindPage> {
           body: Center(
             child: Column(
               children: [
-                Container(
-                  height: displayHeight(context) * 0.2,
+                FutureBuilder(
+                  future: FirebaseUsers().findBestFittingAdversary(),
+                  builder: (context, AsyncSnapshot<UserData?> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    if (snapshot.data == null) {
+                      return const SizedBox();
+                    }
+                    return _showRecommendedPlayer
+                        ? Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(14, 26, 14, 14),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      "Our pick for you !",
+                                      style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w900),
+                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _showRecommendedPlayer = false;
+                                          });
+                                        },
+                                        child: Text(
+                                          "Dismiss",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                                  .withOpacity(0.4)),
+                                        ))
+                                  ],
+                                ),
+                              ),
+                              _buildListTile(snapshot.data!,
+                                  context), //eventually costumize this to not be the same as the list?
+                            ],
+                          )
+                        : TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _showRecommendedPlayer = true;
+                              });
+                            },
+                            child: Text(
+                              "Show recommended pick",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.4)),
+                            ));
+                  },
                 ),
+                SizedBox(height: displayHeight(context) * 0.06),
                 Padding(
                   //these indivdual paddings are necessary beacuse of the shadoes of the users list tiles
                   padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
@@ -75,11 +135,20 @@ class _FindPageState extends State<FindPage> {
                           ),
                         ],
                       ),
-                      IconButton(
-                          onPressed: () {
-                            _filtersPopUp(context);
-                          },
-                          icon: const Icon(Icons.filter_alt_outlined)),
+                      Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                _filtersPopUp(context);
+                              },
+                              icon: const Icon(Icons.filter_alt_outlined)),
+                          IconButton(
+                              onPressed: () {
+                                setState(() {});
+                              },
+                              icon: const Icon(Icons.refresh))
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -88,9 +157,12 @@ class _FindPageState extends State<FindPage> {
                     child: _userSearchBar(context)),
                 Expanded(
                   child: Container(
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseUsers().getUsersOrderedByDistance(
-                          userData!.location, _radiusSelected),
+                    child: StreamBuilder<dynamic>(
+                      stream: FirebaseUsers().orderedUsersStream(
+                          _distanceIsSelected,
+                          _ELOIsSelected,
+                          _gamesPlayedIsSelected,
+                          _ageIsSelected),
                       builder: (context, snapshots) {
                         if ((snapshots.connectionState ==
                             ConnectionState.waiting)) {
@@ -133,6 +205,10 @@ class _FindPageState extends State<FindPage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      "Filter by",
+                      style: TextStyle(fontSize: 18),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -157,130 +233,6 @@ class _FindPageState extends State<FindPage> {
                       ],
                     ),
                     SizedBox(height: displayHeight(context) * 0.04),
-                    Column(children: [
-                      //here we repeat code beacuse o fthe exception cases where we need a range slider. But we can refactor later
-
-                      Visibility(
-                        visible: _distanceIsSelected,
-                        child: Column(children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("Distance from you : " +
-                                _distanceSelected.toString() +
-                                " KM"),
-                          ),
-                          Slider(
-                            value: _distanceSelected,
-                            label: _distanceSelected.toString() + " Km",
-                            max: 500,
-                            min: 0,
-                            divisions: 10,
-                            onChanged: ((double value) {
-                              setState(() {
-                                _distanceSelected = value;
-                              });
-                            }),
-                          ),
-                        ]),
-                      ),
-
-                      Visibility(
-                        visible: _ELOIsSelected,
-                        child: Column(children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("ELO : " +
-                                _minELOSelected.toInt().toString() +
-                                " - " +
-                                _maxELOSelected.toInt().toString()),
-                          ),
-                          RangeSlider(
-                            min: 0,
-                            max: 200,
-                            values:
-                                RangeValues(_minELOSelected, _maxELOSelected),
-                            divisions: 200,
-                            onChanged: ((values) {
-                              setState(() {
-                                _minELOSelected = values.start;
-                                _maxELOSelected = values.end;
-                              });
-                            }),
-                          ),
-                        ]),
-                      ),
-
-                      Visibility(
-                        visible: _gamesPlayedIsSelected,
-                        child: Column(children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("Games played : " +
-                                _minGamesPlayedSelected.toInt().toString() +
-                                " - " +
-                                _maxGamesPlayedSelected.toInt().toString()),
-                          ),
-                          RangeSlider(
-                            min: 0,
-                            max: 300,
-                            values: RangeValues(_minGamesPlayedSelected,
-                                _maxGamesPlayedSelected),
-                            divisions: 300,
-                            onChanged: ((values) {
-                              setState(() {
-                                _minGamesPlayedSelected = values.start;
-                                _maxGamesPlayedSelected = values.end;
-                              });
-                            }),
-                          ),
-                        ]),
-                      ),
-
-                      Visibility(
-                        visible: _ageIsSelected,
-                        child: Column(children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text("Age : " +
-                                _minAgeSelected.toInt().toString() +
-                                " - " +
-                                _maxAgeSelected.toInt().toString()),
-                          ),
-                          RangeSlider(
-                            min: 18,
-                            max: 80,
-                            values:
-                                RangeValues(_minAgeSelected, _maxAgeSelected),
-                            divisions: 62,
-                            onChanged: ((values) {
-                              setState(() {
-                                _minAgeSelected = values.start;
-                                _maxAgeSelected = values.end;
-                              });
-                            }),
-                          ),
-                        ]),
-                      ),
-                    ]),
-                    Visibility(
-                        visible: _ELOIsSelected ||
-                            _ageIsSelected ||
-                            _distanceIsSelected ||
-                            _gamesPlayedIsSelected,
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            //update Stream
-                          },
-                          style: TextButton.styleFrom(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.secondary),
-                          child: Text(
-                            "Update",
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.tertiary),
-                          ),
-                        ))
                   ],
                 ),
               );
@@ -390,7 +342,9 @@ class _FindPageState extends State<FindPage> {
   StatelessWidget _buildListTile(UserData userData, BuildContext context) {
     if (userSearchInput.isEmpty) {
       return Visibility(
-        visible: userData.UID != Auth().currentUser!.uid,
+        visible: userData.UID != Auth().currentUser!.uid &&
+            userData
+                .hasSetupAccount, // is this good here, or should we use .where() when fetching the users from firebase
         child: Padding(
           padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
           child: Container(
