@@ -8,7 +8,9 @@ import 'package:tennisfy/components/stats_card.dart';
 import 'package:tennisfy/helpers/media_query_helpers.dart';
 import 'package:tennisfy/helpers/services/firebase_chats.dart';
 import 'package:tennisfy/models/comment_model.dart';
+import 'package:tennisfy/models/game_invite_model.dart';
 import 'package:tennisfy/models/user_model.dart';
+import 'package:tennisfy/pages/challange_page.dart';
 import 'package:tennisfy/pages/chat_page.dart';
 import 'package:tennisfy/pages/profile_edit_page.dart';
 import '../helpers/services/auth.dart';
@@ -52,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       body: userData == null
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : Center(
@@ -216,15 +218,28 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: TextButton(
+                              //make this a stream, to update async
                               onPressed: () {
                                 userData.UID == Auth().currentUser!.uid
                                     ? goToPage(context, ProfileEditPage())
-                                    : {}; //challenge user;
+                                    : checkGameInviteList()!
+                                        ? {
+                                            FirebaseUsers()
+                                                .unsendGameInvite(userData.UID),
+                                          }
+                                        : {
+                                            goToPage(
+                                                context,
+                                                ChallengePage(
+                                                    userData: userData))
+                                          }; //challenge user;
                               },
                               child: Text(
                                 userData.UID == Auth().currentUser!.uid
                                     ? "Edit"
-                                    : "Challenge",
+                                    : checkGameInviteList()!
+                                        ? "Game invite pending"
+                                        : "Challenge",
                                 style: TextStyle(
                                     fontSize: 20,
                                     color:
@@ -454,6 +469,22 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
     );
+  }
+
+  ///
+  ///Aux function to determine if the current user has already sent a game invite to the other user
+  ///
+  bool? checkGameInviteList() {
+    if (widget.userData == null) {
+      print("Error, userData is Null");
+    }
+    bool _found = false;
+    GameInvite gameInvite;
+    for (gameInvite in widget.userData!.gamesInvitesList) {
+      if (gameInvite.senderUID == Auth().currentUserUID) _found = true;
+    }
+
+    return _found;
   }
 
   List<Container> commentsTileList(List commentsList) {

@@ -237,6 +237,7 @@ class _LoginAndRegisterPageState extends State<LoginAndRegisterPage> {
         gamesPlayed: [],
         friendsList: [],
         nextGamesList: [],
+        gamesInvitesList: [],
         reputation: 0.0,
         dateJoined: DateTime.now(),
         comments: [],

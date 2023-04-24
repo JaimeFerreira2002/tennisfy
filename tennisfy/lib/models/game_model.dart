@@ -42,10 +42,10 @@ class Game {
       isCompetitive: json['IsCompetitive'],
       player1UID: json['Player1UID'],
       player2UID: json['Player2UID'],
-      winnerUID: json['WinnerUID'] == null ? null : json['WinnerUID'],
-      finalScore: json['FinalScore'] == null ? null : json['FinalScore'],
-      dateTimeSet: json['DateTimeSet'] == null ? null : json['DateTimeSet'],
-      locationSet: json['LocationSet'] == null ? null : json['LocationSet'],
+      winnerUID: json['WinnerUID'] ?? json['WinnerUID'],
+      finalScore: json['FinalScore'] ?? json['FinalScore'],
+      dateTimeSet: json['DateTimeSet'] ?? json['DateTimeSet'],
+      locationSet: json['LocationSet'] ?? json['LocationSet'],
     );
   }
 }

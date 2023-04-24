@@ -5,6 +5,7 @@ import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:tennisfy/models/game_invite_model.dart';
 import '../../models/comment_model.dart';
 import '../../models/game_model.dart';
 import '../../models/user_model.dart';
@@ -498,5 +499,53 @@ class FirebaseUsers {
         .collection('Users')
         .doc(recieverUID)
         .update(reciever.toJson());
+  }
+
+  ///
+  ///This function send a game invite from current user to reciever
+  ///
+  Future sendGameInvite(
+      String recieverUID, bool isCompetitive, String? inviteMessage) async {
+    final recieverDocRef = usersRef.doc(recieverUID);
+    final DocumentSnapshot snapshot = await recieverDocRef.get();
+    final List<dynamic> gameInvitesJsonList =
+        jsonDecode(snapshot['GameInvitesList']);
+    List<GameInvite> gameInvitesList = gameInvitesJsonList
+        .map((gameInviteJson) => GameInvite.fromJson(gameInviteJson))
+        .toList()
+        .cast<GameInvite>();
+    gameInvitesList.add(GameInvite(
+        senderUID: currentUserUID,
+        isCompetitive: isCompetitive,
+        inviteMessage: inviteMessage));
+
+    await recieverDocRef
+        .update({'GameInvitesList': jsonEncode(gameInvitesList)});
+  }
+
+  Future<void> unsendGameInvite(String recieverUID) async {
+    final recieverDocRef = usersRef.doc(recieverUID);
+    final DocumentSnapshot snapshot = await recieverDocRef.get();
+    final List<dynamic> gameInvitesJsonList =
+        jsonDecode(snapshot['GameInvitesList']);
+    List<GameInvite> gameInvitesList = gameInvitesJsonList
+        .map((gameInviteJson) => GameInvite.fromJson(gameInviteJson))
+        .toList()
+        .cast<GameInvite>();
+
+    // find the index of the game invite with the given inviteUID
+    int inviteIndex = gameInvitesList
+        .indexWhere((gameInvite) => gameInvite.senderUID == currentUserUID);
+
+    if (inviteIndex >= 0) {
+      // if the invite was found, remove it from the list
+      gameInvitesList.removeAt(inviteIndex);
+      await recieverDocRef.update({
+        'GameInvitesList': jsonEncode(gameInvitesList),
+      });
+      print("Game invite with inviteUID '$currentUserUID' deleted.");
+    } else {
+      print("Game invite with inviteUID '$currentUserUID' not found.");
+    }
   }
 }

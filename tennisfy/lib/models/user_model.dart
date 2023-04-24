@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tennisfy/models/comment_model.dart';
+import 'package:tennisfy/models/game_invite_model.dart';
 import '../helpers/helper_methods.dart';
 import 'game_model.dart';
 
@@ -20,6 +21,7 @@ class UserData {
   List<Game> gamesPlayed;
   List<String> friendsList; //list of uid of friends
   List<String> nextGamesList; //list with Id's of user next games
+  List<GameInvite> gamesInvitesList; //List of invites this user has recieved
   double reputation;
   DateTime dateJoined;
   List<Comment> comments;
@@ -42,6 +44,7 @@ class UserData {
       required this.gamesPlayed,
       required this.friendsList,
       required this.nextGamesList,
+      required this.gamesInvitesList,
       required this.reputation,
       required this.dateJoined,
       required this.comments,
@@ -63,6 +66,7 @@ class UserData {
         'GamesPlayed': jsonEncode(gamesPlayed),
         'FriendsList': jsonEncode(friendsList),
         'NextGamesList': jsonEncode(nextGamesList),
+        'GameInvitesList': jsonEncode(gamesInvitesList),
         'Reputation': reputation,
         'DateJoined': dateToFirebase(dateJoined),
         'CommentsList': jsonEncode(comments),
@@ -77,6 +81,7 @@ class UserData {
   static fromJson(Map<String, dynamic> json) {
     List<dynamic> gamesPlayedJsonList = jsonDecode(json['GamesPlayed']);
     List<dynamic> nextGamesJsonList = jsonDecode(json['NextGamesList']);
+    List<dynamic> gameInvitesJsonList = jsonDecode(json['GameInvitesList']);
     List<dynamic> friendsJsonList = jsonDecode(json['FriendsList']);
     List<dynamic> commentsJsonList = jsonDecode(json['CommentsList']);
     List<dynamic> friendRequestsJsonList = jsonDecode(json['FriendRequests']);
@@ -100,6 +105,10 @@ class UserData {
           .cast<Game>(),
       friendsList: friendsJsonList.cast<String>(),
       nextGamesList: nextGamesJsonList.cast<String>(),
+      gamesInvitesList: gameInvitesJsonList
+          .map((gameInviteJson) => GameInvite.fromJson(gameInviteJson))
+          .toList()
+          .cast<GameInvite>(),
       reputation: json['Reputation'],
       dateJoined: dateFromFirebase(json['DateJoined']),
       comments: commentsJsonList

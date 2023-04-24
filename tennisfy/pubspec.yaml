@@ -90,6 +90,7 @@ flutter:
     - assets/images/tennis_reciever_cartoon.png
     - assets/images/tennis_net_cartoon.png
     - assets/images/waiting_cartoon.png
+    - assets/images/single_player_cartoon.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

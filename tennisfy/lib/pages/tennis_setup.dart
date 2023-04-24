@@ -351,6 +351,7 @@ class _TennisSetupState extends State<TennisSetup> {
       gamesPlayed: [],
       friendsList: [],
       nextGamesList: [],
+      gamesInvitesList: [],
       reputation: 0.0,
       dateJoined: DateTime.now(),
       comments: [],
