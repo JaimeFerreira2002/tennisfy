@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:tennisfy/helpers/media_query_helpers.dart';
-
 import 'package:tennisfy/helpers/widget_tree.dart';
 
 Future main() async {
@@ -69,7 +67,7 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.w900),
           //used for smaller text
           subtitle1: TextStyle(
-              fontFamily: 'Poppins',
+               fontFamily: 'Poppins',
               fontSize: 12,
               color: Color.fromARGB(255, 41, 41, 41),
               fontWeight: FontWeight.w600),
