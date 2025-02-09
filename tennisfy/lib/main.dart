@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       builder: Platform.isIOS
           //used to override bold text on iphone, only run the mediaquery builder when in IOS,because when it runs in android, it lags a
-          ? (context, child) => MediaQuery(
+          ? (context, child) => MediaQuery(P
                 data: MediaQuery.of(context).copyWith(boldText: false),
                 child: child!,
               )
@@ -48,31 +48,31 @@ class MyApp extends StatelessWidget {
             )),
         textTheme: const TextTheme(
           //body medium
-          bodyText1: TextStyle(
+          bodyMedium: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 14,
               color: Color.fromARGB(255, 41, 41, 41),
               fontWeight: FontWeight.w600),
           //body bold
-          bodyText2: TextStyle(
+          bodyLarge: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 14,
               color: Color.fromARGB(255, 41, 41, 41),
               fontWeight: FontWeight.bold),
           //title big
-          headline1: TextStyle(
+          headlineLarge: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 34,
               color: Color.fromARGB(255, 41, 41, 41),
               fontWeight: FontWeight.w900),
           //used for smaller text
-          subtitle1: TextStyle(
+          labelSmall: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 12,
               color: Color.fromARGB(255, 41, 41, 41),
               fontWeight: FontWeight.w600),
           //text for green big buttons
-          button: TextStyle(
+          displayMedium: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 20,
               color: Color.fromARGB(255, 255, 255, 255),
