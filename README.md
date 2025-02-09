@@ -1,4 +1,4 @@
-# 🎾 MatchPoint – Find Tennis Partners & Compete  
+# 🎾 Tennisfy – Find Tennis Partners & Compete  
 
 Welcome to **Tennisfy**, the ultimate app for tennis players looking to **find partners, schedule matches, and compete**! Whether you're a casual player or a serious competitor, Tennisfy connects you with nearby players and helps you organize games effortlessly.  
 
