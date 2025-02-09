@@ -250,11 +250,13 @@ class _LoginAndRegisterPageState extends State<LoginAndRegisterPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+
       final json = newUser.toJson();
       FirebaseFirestore.instance
           .collection('Users')
           .doc(Auth().currentUser!.uid.toString())
           .set(json);
+          
     } on FirebaseAuthException catch (e) {
       if (e.code == "invalid-email") {
         setState(() {

@@ -70,6 +70,10 @@ class FirebaseUsers {
     return allUsers;
   }
 
+  Future<String> getCurrentUsername2(){
+    return usersRef.doc(currentUserUID).get().then((value) => value.get('Username'));
+  }
+
   ///
   ///This is used in the simple version of the filter, that only orders users
   ///
@@ -385,7 +389,7 @@ class FirebaseUsers {
   ///Checks if two users are friends or not
   ///
   Future<bool> userAreFriends(String userUID1, String userUID2) async {
-    UserData user1 = await getUserData(userUID1);
+    UserData user1 = await getUserData(userUID1); 
 
     if (user1.friendsList.contains(userUID2)) {
       return true;
@@ -445,7 +449,7 @@ class FirebaseUsers {
     UserData reciever = await getUserData(recieverUID);
     UserData sender = await getUserData(senderUID);
 
-//remove request from requests list,add sender to reciever friends list and update firebase reference
+    //remove request from requests list,add sender to reciever friends list and update firebase reference
     reciever.friendRequests.remove(senderUID);
     reciever.friendsList.add(senderUID);
 

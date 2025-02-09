@@ -277,7 +277,6 @@ class _AccountSetupState extends State<AccountSetup> {
                                             } else {
                                               setState(() {
                                                 _hasPickedDate = true;
-
                                                 datePickerHintText = datePicked
                                                         .day
                                                         .toString() +

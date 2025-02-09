@@ -1,4 +1,4 @@
-package com.example.tennisfy
+package com.caremate.app
 
 import io.flutter.embedding.android.FlutterActivity
 
